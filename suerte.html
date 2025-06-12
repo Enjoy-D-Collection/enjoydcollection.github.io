@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Suerte del Día</title>
+  <link rel="stylesheet" href="estilos.css"> <!-- O usa tu CSS principal -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    canvas {
+      border-radius: 50%;
+      border: 6px solid #333;
+      margin-bottom: 20px;
+    }
+    #resultado {
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎉 Suerte del Día 🎉</h1>
+  <p>Gira la ruleta y descubre si ganaste algo especial.</p>
+  <canvas id="ruletaCanvas" width="400" height="400"></canvas><br>
+  <button onclick="girar()">GIRAR</button>
+  <p id="resultado"></p>
+
+  <script>
+    const premios = [
+      { nombre: "Nada 😅", probabilidad: 91.485 },
+      { nombre: "Sobre de cartas ✉️", probabilidad: 5 },
+      { nombre: "Descuento 5% 💸 (Código: SUERTE5)", probabilidad: 3 },
+      { nombre: "2 Sobres ✉️✉️", probabilidad: 0.5 },
+      { nombre: "Carta Gradeada 🔥", probabilidad: 0.015 }
+    ];
+
+    const colores = ["#e74c3c", "#3498db", "#2ecc71", "#f1c40f", "#9b59b6"];
+
+    function girar() {
+      const canvas = document.getElementById("ruletaCanvas");
+      const ctx = canvas.getContext("2d");
+      const total = premios.length;
+      const anguloPorPremio = 2 * Math.PI / total;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < total; i++) {
+        ctx.beginPath();
+        ctx.moveTo(200, 200);
+        ctx.fillStyle = colores[i % colores.length];
+        ctx.arc(200, 200, 200, i * anguloPorPremio, (i + 1) * anguloPorPremio);
+        ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.font = "14px Arial";
+        ctx.save();
+        ctx.translate(200, 200);
+        ctx.rotate((i + 0.5) * anguloPorPremio);
+        ctx.fillText(premios[i].nombre, 90, 0);
+        ctx.restore();
+      }
+
+      const resultado = seleccionarPremioAleatorio();
+      document.getElementById("resultado").textContent = "¡Ganaste: " + resultado.nombre + "!";
+    }
+
+    function seleccionarPremioAleatorio() {
+      let rnd = Math.random() * 100;
+      for (let premio of premios) {
+        if (rnd < premio.probabilidad) return premio;
+        rnd -= premio.probabilidad;
+      }
+      return { nombre: "Nada 😅" };
+    }
+  </script>
+</body>
+</html>
