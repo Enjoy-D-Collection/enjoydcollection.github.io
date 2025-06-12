@@ -1,302 +1,65 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Enjoy D' Collection - Tienda Pokémon</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Suerte del Día</title>
+  <link rel="stylesheet" href="estilos.css"> <!-- O usa tu CSS principal -->
   <style>
     body {
-      margin: 0;
-      font-family: 'Arial', sans-serif;
-      background-color: #f4f4f4;
-    }
-    header {
-      background: linear-gradient(135deg, #ffcb05, #3b4cca);
+      font-family: Arial, sans-serif;
       text-align: center;
-      color: white;
-      padding: 20px;
+      padding: 40px;
+      background-color: #f7f7f7;
+      color: #333;
     }
-    header img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 15px;
-    }
+
     h1 {
-      font-family: 'Press Start 2P', cursive;
-      margin-top: 20px;
+      font-size: 2.5em;
+      color: #2c3e50;
+      margin-bottom: 10px;
     }
-    nav {
-      position: sticky;
-      top: 0;
-      background-color: #ef5350;
-      padding: 10px;
-      text-align: center;
-      z-index: 10;
+
+    p {
+      font-size: 1.2em;
+      margin-bottom: 30px;
     }
-    nav a {
-      color: white;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
+
+    canvas {
+      border-radius: 50%;
+      border: 8px solid #2c3e50;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
     }
-    section {
-      padding: 40px 20px;
-      max-width: 1200px;
-      margin: auto;
-    }
-    .card-gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-    }
-    .card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      overflow: hidden;
-      transition: transform 0.2s;
-    }
-    .card:hover {
-      transform: scale(1.03);
-    }
-    .card img {
-      width: 100%;
-      height: 250px;
-      object-fit: contain;
-      background-color: #fff;
-    }
-    .card h3, .card p {
-      padding: 10px 15px;
-    }
-    .card button {
-      display: block;
-      margin: 10px auto 20px;
-      padding: 10px 15px;
-      background-color: #3b4cca;
-      color: white;
+
+    button {
+      background-color: #3498db;
+      color: #fff;
+      padding: 12px 24px;
+      font-size: 1em;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s;
-    }
-    .card button:hover {
-      background-color: #2a2f99;
-    }
-    footer {
-      background-color: #3b4cca;
-      color: white;
-      text-align: center;
-      padding: 30px 20px;
-      margin-top: 60px;
+      transition: background-color 0.3s ease;
     }
 
-    /* 🎰 Estilos ruleta Poké Ball */
-    .wheel-section {
-      text-align: center;
-      margin: 60px auto;
-      font-family: 'Press Start 2P', cursive;
-      background: #fff;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    button:hover {
+      background-color: #2980b9;
     }
 
-    .wheel-container {
-      position: relative;
-      width: 300px;
-      height: 300px;
-      margin: 0 auto;
-    }
-
-    .pokeball {
-      width: 300px;
-      height: 300px;
-      transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
-    }
-
-    .wheel-section button {
-      margin-top: 20px;
-      padding: 12px 20px;
-      background: #3b4cca;
-      color: white;
-      border: none;
-      font-size: 14px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-
-    .wheel-section button:hover {
-      background: #2a2f99;
+    #resultado {
+      font-size: 1.4em;
+      font-weight: bold;
+      margin-top: 30px;
+      color: #27ae60;
     }
   </style>
 </head>
 <body>
-
-<header>
-  <img src="https://drive.google.com/uc?export=view&id=1OYrup3u8BjCilFFC1or8IDrT6J0BznE6" alt="Imagen cabecera">
-  <h1>Enjoy D' Collection</h1>
-  <p>Cartas Pokémon gradadas, auténticas y de colección</p>
-</header>
-
-<nav>
-  <a href="#inicio">Inicio</a>
-  <a href="#cartas">Cartas</a>
-  <a href="#gradadas">Gradadas</a>
-  <a href="#suerte">Suerte del Día</a>
-  <a href="#contacto">Contacto</a>
-</nav>
-
-<section id="inicio">
-  <h2>Bienvenido</h2>
-  <p>Tu destino para encontrar las mejores cartas Pokémon del mundo, seleccionadas para coleccionistas exigentes.</p>
-</section>
-
-<section id="cartas">
-  <h2>Cartas Disponibles</h2>
-  <div class="card-gallery">
-    <!-- Cartas aquí -->
-  </div>
-</section>
-
-<section id="gradadas">
-  <h2>Cartas Gradadas</h2>
-  <div class="card-gallery">
-    <!-- Cartas gradadas -->
-  </div>
-</section>
-
-<section id="contacto">
-  <h2>Contacto</h2>
-  <p>Correo: <a href="mailto:contacto@enjoycollection.com">contacto@enjoycollection.com</a></p>
-  <p>Instagram: @enjoydcollection</p>
-  <p>Facebook: Enjoy D' Collection</p>
-</section>
-
-<!-- 🎰 NUEVA RULETA POKÉ BALL -->
-<section id="suerte" class="wheel-section">
-  <h2>🎰 Suerte del Día</h2>
-  <p>Introduce tu código de compra y gira la Poké Ball. ¡Puedes ganar premios Pokémon únicos!</p>
-  <div class="wheel-container">
-    <img id="wheel" src="https://www.pngplay.com/wp-content/uploads/7/Pokeball-PNG-HD-Quality.png" alt="Pokeball" class="pokeball">
-    <button onclick="spinWheel()">Girar Poké Ball</button>
-  </div>
-</section>
-
-<!-- Modal de premio -->
-<div id="rewardModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-  background-color:rgba(0,0,0,0.8); color:white; text-align:center; padding-top:100px; z-index:1000;">
-  <div style="background:#fff; color:#000; margin:auto; padding:20px; border-radius:10px; width:90%; max-width:400px;">
-    <h2>🎉 ¡Felicidades!</h2>
-    <p id="rewardText"></p>
-    <img id="rewardImage" src="" alt="Premio" style="max-width:100%; border-radius:10px;">
-    <p><strong>Tu cupón:</strong> <span id="couponCode"></span></p>
-    <button onclick="document.getElementById('rewardModal').style.display='none'">Cerrar</button>
-  </div>
-</div>
-
-<footer>
-  <p>&copy; 2025 Enjoy D' Collection - Todos los derechos reservados.</p>
-</footer>
-
-<!-- 🧠 Script de lógica de la ruleta -->
-<script>
-let spinning = false;
-
-const rewards = [
-  {
-    name: 'Pikachu Sticker',
-    image: 'https://images.pokemontcg.io/base1/58.png',
-    chance: 0.25,
-    coupon: 'PIKA25'
-  },
-  {
-    name: 'Charmander Badge',
-    image: 'https://images.pokemontcg.io/base1/4.png',
-    chance: 0.20,
-    coupon: 'CHAR20'
-  },
-  {
-    name: 'Squirtle Pin',
-    image: 'https://images.pokemontcg.io/base1/63.png',
-    chance: 0.20,
-    coupon: 'SQUIR20'
-  },
-  {
-    name: 'Rare Candy Pack',
-    image: 'https://www.pngmart.com/files/22/Rare-Candy-PNG-Clipart.png',
-    chance: 0.15,
-    coupon: 'CANDY15'
-  },
-  {
-    name: 'Poké Ball Keychain',
-    image: 'https://www.pngplay.com/wp-content/uploads/7/Pokeball-PNG-Photos.png',
-    chance: 0.10,
-    coupon: 'BALL10'
-  },
-  {
-    name: '✨ Ultra Rare Planta 🌱',
-    image: 'https://www.pngmart.com/files/13/Small-Plant-PNG-Photos.png',
-    chance: 0.10,
-    coupon: 'PLANTA10'
-  }
-];
-
-const validCodes = ['abc123', 'pkm2024', 'pikacode'];
-const usedCodes = [];
-
-function spinWheel() {
-  if (spinning) return;
-
-  const code = prompt("Introduce tu código de compra:");
-  if (!validateCode(code)) {
-    alert("Código inválido o ya usado.");
-    return;
-  }
-
-  spinning = true;
-
-  const selectedIndex = getWeightedRandomIndex(rewards);
-  const degrees = 3600 + selectedIndex * 60;
-
-  const pokeball = document.getElementById("wheel");
-  pokeball.style.transform = `rotate(${degrees}deg)`;
-
-  setTimeout(() => {
-    showReward(selectedIndex);
-    spinning = false;
-  }, 4000);
-}
-
-function getWeightedRandomIndex(list) {
-  const rand = Math.random();
-  let sum = 0;
-  for (let i = 0; i < list.length; i++) {
-    sum += list[i].chance;
-    if (rand < sum) return i;
-  }
-  return list.length - 1;
-}
-
-function validateCode(code) {
-  if (!validCodes.includes(code)) return false;
-  if (usedCodes.includes(code)) return false;
-  usedCodes.push(code);
-  return true;
-}
-
-function showReward(index) {
-  const reward = rewards[index];
-  document.getElementById('rewardText').textContent = reward.name;
-  document.getElementById('rewardImage').src = reward.image;
-  document.getElementById('couponCode').textContent = reward.coupon;
-  document.getElementById('rewardModal').style.display = 'block';
-}
-</script>
-
-</body>
-</html>
-
+  <h1>🎉 Suerte del Día 🎉</h1>
+  <p>Gira la ruleta y descubre si ganaste algo especial.</p>
+  <canvas id="ruletaCanvas" width="400" height="400"></canvas><br>
+  <button onclick="girar()">GIRAR</button>
+  <p id="resultado"></p>
 
   <script>
     const premios = [
