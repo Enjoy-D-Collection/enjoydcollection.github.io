@@ -5,28 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ruleta Promocional</title>
 
-  <!-- 🔹 Script de Firebase (Módulo) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, doc, getDoc, updateDoc, collection } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-    // 🔹 Configuración de Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
-      authDomain: "codigos-5820e.firebaseapp.com",
-      projectId: "codigos-5820e",
-      storageBucket: "codigos-5820e.appspot.com",
-      messagingSenderId: "231416234142",
-      appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f"
-    };
-
-    // 🔹 Inicializar Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // 🔹 Exponer la base de datos globalmente
-    window.db = db;
-  </script>
+  <!-- 🔹 Cargar Firebase sin "type=module" -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 
   <style>
     body { font-family: sans-serif; text-align: center; padding: 2rem; }
@@ -52,9 +33,23 @@
     <div id="result"></div>
   </div>
 
-  <!-- 🔹 Script normal para validar código -->
+  <!-- 🔹 Script para inicializar Firebase y validar código -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
+      // 🔹 Inicializar Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
+        authDomain: "codigos-5820e.firebaseapp.com",
+        projectId: "codigos-5820e",
+        storageBucket: "codigos-5820e.appspot.com",
+        messagingSenderId: "231416234142",
+        appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+
+      // 🔹 Función para validar código
       async function validarCodi() {
         const codi = document.getElementById("codeInput").value.trim();
         
@@ -64,19 +59,13 @@
         }
 
         try {
-          if (!window.db) {
-            console.error("❌ Firebase no está disponible en window.db");
-            alert("⚠️ Error al conectar con Firebase. Recarga la página.");
-            return;
-          }
+          const docRef = db.collection("codigos_validos").doc(codi);
+          const docSnap = await docRef.get();
 
-          const docRef = doc(collection(window.db, "codigos_validos"), codi);
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
+          if (docSnap.exists) {
             const datos = docSnap.data();
             if (datos.valido === true && datos.usado === false) {
-              await updateDoc(docRef, { usado: true });
+              await docRef.update({ usado: true });
               document.getElementById("codeSection").classList.add("hidden");
               document.getElementById("ruletaSection").classList.remove("hidden");
             } else {
