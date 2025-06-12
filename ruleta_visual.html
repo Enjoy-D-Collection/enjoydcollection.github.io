@@ -1,10 +1,8 @@
-
-<!-- Ruleta promocional amb animació visual i probabilitat del 5% -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ruleta Promocional</title>
   <style>
     body { font-family: sans-serif; text-align: center; padding: 2rem; }
@@ -19,13 +17,13 @@
 
   <div id="codeSection">
     <p>Introdueix el teu codi exclusiu per accedir a la ruleta:</p>
-    <input type="text" id="codeInput" placeholder="Codi de comprador">
+    <input type="text" id="codeInput" placeholder="Codi de comprador" />
     <button onclick="validarCodi()">Validar</button>
   </div>
 
   <div id="ruletaSection" class="hidden">
     <canvas id="wheelCanvas" width="300" height="300"></canvas>
-    <br>
+    <br />
     <button onclick="girarRuleta()">Girar ruleta</button>
     <div id="result"></div>
   </div>
@@ -35,6 +33,18 @@
       "ABC123": true,
       "XYZ789": true,
       "DEF456": true
+    };
+
+    let canvas, ctx, sectors, currentAngle = 0;
+
+    window.onload = function () {
+      canvas = document.getElementById("wheelCanvas");
+      ctx = canvas.getContext("2d");
+      sectors = ["🎉 Premi!", "No premi", "No premi", "No premi", "No premi",
+                 "No premi", "No premi", "No premi", "No premi", "No premi",
+                 "No premi", "No premi", "No premi", "No premi", "No premi",
+                 "No premi", "No premi", "No premi", "No premi", "No premi"];
+      drawWheel(currentAngle);
     };
 
     function validarCodi() {
@@ -47,13 +57,6 @@
         alert("Codi invàlid o ja utilitzat.");
       }
     }
-
-    const canvas = document.getElementById("wheelCanvas");
-    const ctx = canvas.getContext("2d");
-    const sectors = ["🎉 Premi!", "No premi", "No premi", "No premi", "No premi",
-                     "No premi", "No premi", "No premi", "No premi", "No premi",
-                     "No premi", "No premi", "No premi", "No premi", "No premi",
-                     "No premi", "No premi", "No premi", "No premi", "No premi"];
 
     function drawWheel(angle) {
       const numSectors = sectors.length;
@@ -76,9 +79,6 @@
         ctx.restore();
       }
     }
-
-    let currentAngle = 0;
-    drawWheel(currentAngle);
 
     function girarRuleta() {
       const giro = Math.floor(Math.random() * 360) + 720;
