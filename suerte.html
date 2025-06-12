@@ -23,32 +23,37 @@
     const db = getFirestore(app);
 
     // 🔹 Función para validar código desde Firebase
-    async function validarCodi() {
-      const codi = document.getElementById("codeInput").value.trim();
-      if (!codi) {
+   async function validarCodi() {
+    const codi = document.getElementById("codeInput").value.trim();
+    
+    console.log("Código ingresado:", codi);  // 🔹 Verifica qué código se está enviando
+    
+    if (!codi) {
         alert("⚠️ Ingresa un código válido.");
         return;
-      }
-
-      const docRef = doc(db, "codigos_validos", codi);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const datos = docSnap.data();
-        if (datos.valido === true && datos.usado === false) {
-          // 🔹 Marcar el código como usado en Firebase
-          await updateDoc(docRef, { usado: true });
-
-          document.getElementById("codeSection").classList.add("hidden");
-          document.getElementById("ruletaSection").classList.remove("hidden");
-        } else {
-          alert("❌ Código inválido o ya utilizado.");
-        }
-      } else {
-        alert("❌ Código no encontrado.");
-      }
     }
 
+    const docRef = doc(db, "codigos_validos", codi);
+    console.log("Referencia del documento:", docRef);  // 🔹 Verifica si Firebase está generando la referencia correctamente
+
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        console.log("Documento encontrado en Firebase:", docSnap.data());  // 🔹 Verifica qué datos está obteniendo de Firebase
+
+        const datos = docSnap.data();
+        if (datos.valido === true && datos.usado === false) {
+            await updateDoc(docRef, { usado: true });
+            document.getElementById("codeSection").classList.add("hidden");
+            document.getElementById("ruletaSection").classList.remove("hidden");
+        } else {
+            alert("❌ Código inválido o ya utilizado.");
+        }
+    } else {
+        console.log("❌ Código no encontrado en Firebase.");
+        alert("❌ Código no encontrado.");
+    }
+}
     window.validarCodi = validarCodi; // Permitir acceso desde HTML
   </script>
   <style>
