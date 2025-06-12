@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -91,65 +90,41 @@
       padding: 30px 20px;
       margin-top: 60px;
     }
-    /* 🎰 Estilos para la ruleta Pokémon */
-.wheel-section {
-  text-align: center;
-  margin: 60px auto;
-  font-family: 'Press Start 2P', cursive;
-  background: #fff;
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.1);
-}
 
-.wheel-container {
-  position: relative;
-  width: 300px;
-  height: 300px;
-  margin: 0 auto;
-}
-
-.wheel {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  border: 8px solid #ffcb05;
-  position: relative;
-  transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
-  transform: rotate(0deg);
-}
-
-.segment {
-  position: absolute;
-  width: 50%;
-  height: 50%;
-  background: #ffffff;
-  color: #000;
-  transform-origin: 0% 100%;
-  transform: rotate(calc(var(--i) * 60deg)) skewY(-30deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: bold;
-  border-radius: 0 0 0 100%;
-  background: repeating-conic-gradient(#f8e473 0% 16.6%, #ffffff 16.6% 33.3%);
-}
-
-.wheel-section button {
-  margin-top: 20px;
-  padding: 12px 20px;
-  background: #3b4cca;
-  color: white;
-  border: none;
-  font-size: 14px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.wheel-section button:hover {
-  background: #2a2f99;
-}
+    /* 🎰 Estilo Poké Ball */
+    .wheel-section {
+      text-align: center;
+      margin: 60px auto;
+      font-family: 'Press Start 2P', cursive;
+      background: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .wheel-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin: 0 auto;
+    }
+    .pokeball {
+      width: 300px;
+      height: 300px;
+      transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+    .wheel-section button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      background: #3b4cca;
+      color: white;
+      border: none;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .wheel-section button:hover {
+      background: #2a2f99;
+    }
   </style>
 </head>
 <body>
@@ -164,7 +139,7 @@
   <a href="#inicio">Inicio</a>
   <a href="#cartas">Cartas</a>
   <a href="#gradadas">Gradadas</a>
-  <a href="suerte.html">Suerte del Día</a>
+  <a href="#suerte">Suerte del Día</a>
   <a href="#contacto">Contacto</a>
 </nav>
 
@@ -173,59 +148,29 @@
   <p>Tu destino para encontrar las mejores cartas Pokémon del mundo, seleccionadas para coleccionistas exigentes.</p>
 </section>
 
-<section id="cartas">
-  <h2>Cartas Disponibles</h2>
-  <div class="card-gallery">
-    <div class="card">
-      <img src="https://images.pokemontcg.io/base1/58.png" alt="Pikachu Base Set">
-      <h3>Pikachu Base Set</h3>
-      <p>$15</p>
-      <button>Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://images.pokemontcg.io/base1/4.png" alt="Charizard Holo">
-      <h3>Charizard Holo</h3>
-      <p>$300</p>
-      <button>Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://drive.google.com/uc?export=view&id=1AWRBKLBx5ZRrFk-vQVEtK_hXw2-RxbAk" alt="Producto personalizado 1">
-      <h3>Edición Especial Mewtwo</h3>
-      <p>$85</p>
-      <button>Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://drive.google.com/uc?export=view&id=1LPm7SPkGnOLekvQ9zE947pIiHed5bH3_" alt="Producto personalizado 2">
-      <h3>Zapdos Vintage</h3>
-      <p>$120</p>
-      <button>Agregar al carrito</button>
-    </div>
+<section id="cartas">...</section>
+<section id="gradadas">...</section>
+
+<section id="suerte" class="wheel-section">
+  <h2>🎰 Suerte del Día</h2>
+  <p>Introduce tu código de compra y gira la Poké Ball. ¡Puedes ganar premios Pokémon únicos!</p>
+  <div class="wheel-container">
+    <img id="wheel" src="https://www.pngplay.com/wp-content/uploads/7/Pokeball-PNG-HD-Quality.png" alt="Pokeball" class="pokeball">
+    <button onclick="spinWheel()">Girar Poké Ball</button>
   </div>
 </section>
 
-<section id="gradadas">
-  <h2>Cartas Gradadas</h2>
-  <div class="card-gallery">
-    <div class="card">
-      <img src="https://images.pokemontcg.io/base1/6.png" alt="Gyarados PSA 10">
-      <h3>Gyarados - PSA 10</h3>
-      <p>$450</p>
-      <button>Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://images.pokemontcg.io/base1/1.png" alt="Alakazam BGS 9.5">
-      <h3>Alakazam - BGS 9.5</h3>
-      <p>$320</p>
-      <button>Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://images.pokemontcg.io/base1/3.png" alt="Venusaur Holo">
-      <h3>Venusaur Holo</h3>
-      <p>$280</p>
-      <button>Agregar al carrito</button>
-    </div>
+<!-- Modal de premio -->
+<div id="rewardModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+  background-color:rgba(0,0,0,0.8); color:white; text-align:center; padding-top:100px; z-index:1000;">
+  <div style="background:#fff; color:#000; margin:auto; padding:20px; border-radius:10px; width:90%; max-width:400px;">
+    <h2>🎉 ¡Felicidades!</h2>
+    <p id="rewardText"></p>
+    <img id="rewardImage" src="" alt="Premio" style="max-width:100%; border-radius:10px;">
+    <p><strong>Tu cupón:</strong> <span id="couponCode"></span></p>
+    <button onclick="document.getElementById('rewardModal').style.display='none'">Cerrar</button>
   </div>
-</section>
+</div>
 
 <section id="contacto">
   <h2>Contacto</h2>
@@ -233,27 +178,55 @@
   <p>Instagram: @enjoydcollection</p>
   <p>Facebook: Enjoy D' Collection</p>
 </section>
-<section id="suerte" class="wheel-section">
-  <h2>🎰 Suerte del Día</h2>
-  <p>Introduce tu código de compra y gira la ruleta Pokémon. ¡Puedes ganar premios especiales!</p>
-  <div class="wheel-container">
-    <div id="wheel" class="wheel">
-      <div class="segment" style="--i:0;">🎁 Pikachu</div>
-      <div class="segment" style="--i:1;">🔥 Charmander</div>
-      <div class="segment" style="--i:2;">💧 Squirtle</div>
-      <div class="segment" style="--i:3;">🍬 Rare Candy</div>
-      <div class="segment" style="--i:4;">⚪ Poké Ball</div>
-      <div class="segment" style="--i:5;">✨ Ultra Rare</div>
-    </div>
-    <button onclick="spinWheel()">Girar Ruleta</button>
-  </div>
-</section>
 
 <footer>
   <p>&copy; 2025 Enjoy D' Collection - Todos los derechos reservados.</p>
 </footer>
+
 <script>
 let spinning = false;
+
+const rewards = [
+  {
+    name: 'Pikachu Sticker',
+    image: 'https://images.pokemontcg.io/base1/58.png',
+    chance: 0.25,
+    coupon: 'PIKA25'
+  },
+  {
+    name: 'Charmander Badge',
+    image: 'https://images.pokemontcg.io/base1/4.png',
+    chance: 0.20,
+    coupon: 'CHAR20'
+  },
+  {
+    name: 'Squirtle Pin',
+    image: 'https://images.pokemontcg.io/base1/63.png',
+    chance: 0.20,
+    coupon: 'SQUIR20'
+  },
+  {
+    name: 'Rare Candy Pack',
+    image: 'https://www.pngmart.com/files/22/Rare-Candy-PNG-Clipart.png',
+    chance: 0.15,
+    coupon: 'CANDY15'
+  },
+  {
+    name: 'Poké Ball Keychain',
+    image: 'https://www.pngplay.com/wp-content/uploads/7/Pokeball-PNG-Photos.png',
+    chance: 0.10,
+    coupon: 'BALL10'
+  },
+  {
+    name: '✨ Ultra Rare Planta 🌱',
+    image: 'https://www.pngmart.com/files/13/Small-Plant-PNG-Photos.png',
+    chance: 0.10,
+    coupon: 'PLANTA10'
+  }
+];
+
+const validCodes = ['abc123', 'pkm2024', 'pikacode'];
+const usedCodes = [];
 
 function spinWheel() {
   if (spinning) return;
@@ -266,46 +239,41 @@ function spinWheel() {
 
   spinning = true;
 
-  const probabilityMap = [
-    { name: 'Pikachu', chance: 0.25 },
-    { name: 'Charmander', chance: 0.20 },
-    { name: 'Squirtle', chance: 0.20 },
-    { name: 'Rare Candy', chance: 0.15 },
-    { name: 'Poké Ball', chance: 0.10 },
-    { name: 'Ultra Rare', chance: 0.10 }
-  ];
+  const selectedIndex = getWeightedRandomIndex(rewards);
+  const degrees = 3600 + selectedIndex * 60;
 
-  const selectedIndex = getWeightedRandomIndex(probabilityMap);
-  const degrees = 3600 + (selectedIndex * 60); // Múltiples vueltas + posición del premio
-
-  document.getElementById("wheel").style.transform = `rotate(${degrees}deg)`;
+  const pokeball = document.getElementById("wheel");
+  pokeball.style.transform = `rotate(${degrees}deg)`;
 
   setTimeout(() => {
-    alert("🎉 ¡Ganaste: " + probabilityMap[selectedIndex].name + "!");
+    showReward(selectedIndex);
     spinning = false;
   }, 4000);
 }
 
-function getWeightedRandomIndex(weights) {
+function getWeightedRandomIndex(list) {
   const rand = Math.random();
   let sum = 0;
-  for (let i = 0; i < weights.length; i++) {
-    sum += weights[i].chance;
+  for (let i = 0; i < list.length; i++) {
+    sum += list[i].chance;
     if (rand < sum) return i;
   }
-  return weights.length - 1;
+  return list.length - 1;
 }
-
-// Simulación de códigos válidos
-const validCodes = ['abc123', 'pkm2024', 'pikacode'];
-const usedCodes = [];
 
 function validateCode(code) {
   if (!validCodes.includes(code)) return false;
   if (usedCodes.includes(code)) return false;
-
   usedCodes.push(code);
   return true;
+}
+
+function showReward(index) {
+  const reward = rewards[index];
+  document.getElementById('rewardText').textContent = reward.name;
+  document.getElementById('rewardImage').src = reward.image;
+  document.getElementById('couponCode').textContent = reward.coupon;
+  document.getElementById('rewardModal').style.display = 'block';
 }
 </script>
 
