@@ -210,8 +210,11 @@
     async function procesarCompra() {
         alert("✅ Compra realizada con éxito. Generando código...");
         
-        let codigo = Math.random().toString(36).substring(2, 10).toUpperCase();
-        await setDoc(doc(db, "codigos_validos", codigo), { valido: true });
+let codigo = Math.random().toString(36).substring(2, 10).toUpperCase();
+        await setDoc(doc(db, "codigos_validos", codigo), {
+            valido: true,
+            fechaCreacion: new Date().toISOString()
+        });
 
         alert("🎉 Código generado: " + codigo);
     }
