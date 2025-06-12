@@ -33,8 +33,10 @@
         return;
     }
 
-    const docRef = doc(db, "codigos_validos", codi);
-    console.log("Referencia del documento:", docRef);  // 🔹 Verifica si Firebase está generando la referencia correctamente
+import { collection, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+const docRef = doc(collection(db, "codigos_validos"), codi);
+console.log("Referencia del documento:", docRef.path);  // 🔹 Verifica si Firebase está generando la referencia correctamente
 
     const docSnap = await getDoc(docRef);
 
