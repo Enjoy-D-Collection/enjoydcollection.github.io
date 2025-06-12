@@ -1,0 +1,108 @@
+
+<!-- Ruleta promocional amb animació visual i probabilitat del 5% -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruleta Promocional</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2rem; }
+    canvas { margin-top: 2rem; }
+    .hidden { display: none; }
+    #result { margin-top: 1.5rem; font-size: 1.5rem; font-weight: bold; }
+    #codeSection { margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Promoció Especial - Prova Sort!</h1>
+
+  <div id="codeSection">
+    <p>Introdueix el teu codi exclusiu per accedir a la ruleta:</p>
+    <input type="text" id="codeInput" placeholder="Codi de comprador">
+    <button onclick="validarCodi()">Validar</button>
+  </div>
+
+  <div id="ruletaSection" class="hidden">
+    <canvas id="wheelCanvas" width="300" height="300"></canvas>
+    <br>
+    <button onclick="girarRuleta()">Girar ruleta</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const codisValids = {
+      "ABC123": true,
+      "XYZ789": true,
+      "DEF456": true
+    };
+
+    function validarCodi() {
+      const codi = document.getElementById("codeInput").value.trim();
+      if (codisValids[codi]) {
+        codisValids[codi] = false;
+        document.getElementById("codeSection").classList.add("hidden");
+        document.getElementById("ruletaSection").classList.remove("hidden");
+      } else {
+        alert("Codi invàlid o ja utilitzat.");
+      }
+    }
+
+    const canvas = document.getElementById("wheelCanvas");
+    const ctx = canvas.getContext("2d");
+    const sectors = ["🎉 Premi!", "No premi", "No premi", "No premi", "No premi",
+                     "No premi", "No premi", "No premi", "No premi", "No premi",
+                     "No premi", "No premi", "No premi", "No premi", "No premi",
+                     "No premi", "No premi", "No premi", "No premi", "No premi"];
+
+    function drawWheel(angle) {
+      const numSectors = sectors.length;
+      const arc = 2 * Math.PI / numSectors;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < numSectors; i++) {
+        const start = angle + i * arc;
+        ctx.beginPath();
+        ctx.moveTo(150, 150);
+        ctx.arc(150, 150, 150, start, start + arc);
+        ctx.fillStyle = i % 2 === 0 ? "#fcd34d" : "#fbbf24";
+        ctx.fill();
+        ctx.save();
+        ctx.translate(150, 150);
+        ctx.rotate(start + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#000";
+        ctx.font = "14px sans-serif";
+        ctx.fillText(sectors[i], 140, 5);
+        ctx.restore();
+      }
+    }
+
+    let currentAngle = 0;
+    drawWheel(currentAngle);
+
+    function girarRuleta() {
+      const giro = Math.floor(Math.random() * 360) + 720;
+      const duration = 3000;
+      const start = Date.now();
+      const animate = () => {
+        const elapsed = Date.now() - start;
+        const progress = elapsed / duration;
+        if (progress < 1) {
+          currentAngle += (giro / duration) * 20;
+          drawWheel(currentAngle * Math.PI / 180);
+          requestAnimationFrame(animate);
+        } else {
+          currentAngle += giro;
+          currentAngle %= 360;
+          drawWheel(currentAngle * Math.PI / 180);
+          const selected = Math.floor((sectors.length - (currentAngle / (360 / sectors.length))) % sectors.length);
+          const result = sectors[selected];
+          document.getElementById("result").textContent =
+            result === "🎉 Premi!" ? "🎉 Enhorabona! Has guanyat un sobre!" : "Ho sentim, aquesta vegada no t'ha tocat.";
+        }
+      };
+      animate();
+    }
+  </script>
+</body>
+</html>
