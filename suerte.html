@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ruleta Promocional</title>
- <script type="module">
+<script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
   import { getFirestore, doc, getDoc, updateDoc, collection } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
@@ -22,8 +22,8 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // 🔹 Función para validar código desde Firebase
-  async function validarCodi() {
+  // 🔹 Definir la función validarCodi
+  function validarCodi() {
     const codi = document.getElementById("codeInput").value.trim();
     
     if (!codi) {
@@ -31,33 +31,33 @@
       return;
     }
 
-    try {
-      const docRef = doc(collection(db, "codigos_validos"), codi);
-      const docSnap = await getDoc(docRef);
+    (async () => {
+      try {
+        const docRef = doc(collection(db, "codigos_validos"), codi);
+        const docSnap = await getDoc(docRef);
 
-      if (docSnap.exists()) {
-        const datos = docSnap.data();
-        if (datos.valido === true && datos.usado === false) {
-          await updateDoc(docRef, { usado: true });
-          document.getElementById("codeSection").classList.add("hidden");
-          document.getElementById("ruletaSection").classList.remove("hidden");
+        if (docSnap.exists()) {
+          const datos = docSnap.data();
+          if (datos.valido === true && datos.usado === false) {
+            await updateDoc(docRef, { usado: true });
+            document.getElementById("codeSection").classList.add("hidden");
+            document.getElementById("ruletaSection").classList.remove("hidden");
+          } else {
+            alert("❌ Código inválido o ya utilizado.");
+          }
         } else {
-          alert("❌ Código inválido o ya utilizado.");
+          alert("❌ Código no encontrado.");
         }
-      } else {
-        alert("❌ Código no encontrado.");
+      } catch (error) {
+        console.error("Error al validar el código:", error);
+        alert("⚠️ Hubo un problema al validar el código. Inténtalo de nuevo.");
       }
-    } catch (error) {
-      console.error("Error al validar el código:", error);
-      alert("⚠️ Hubo un problema al validar el código. Inténtalo de nuevo.");
-    }
+    })();
   }
 
-  // 🔹 Asegurar que la función se asigna después de que el DOM esté listo
-  window.onload = () => {
-    window.validarCodi = validarCodi;
-    console.log("✅ validarCodi está disponible en window:", window.validarCodi);
-  };
+  // 🔹 Asignar la función al objeto global window
+  window.validarCodi = validarCodi;
+  console.log("✅ validarCodi está disponible en window:", window.validarCodi);
 </script>
   <style>
     body { font-family: sans-serif; text-align: center; padding: 2rem; }
