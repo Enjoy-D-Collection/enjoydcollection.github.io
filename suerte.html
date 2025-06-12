@@ -54,39 +54,47 @@
 
   <!-- 🔹 Script normal para validar código -->
   <script>
-    async function validarCodi() {
-      const codi = document.getElementById("codeInput").value.trim();
-      
-      if (!codi) {
-        alert("⚠️ Ingresa un código válido.");
-        return;
-      }
-
-      try {
-        const docRef = doc(collection(window.db, "codigos_validos"), codi);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const datos = docSnap.data();
-          if (datos.valido === true && datos.usado === false) {
-            await updateDoc(docRef, { usado: true });
-            document.getElementById("codeSection").classList.add("hidden");
-            document.getElementById("ruletaSection").classList.remove("hidden");
-          } else {
-            alert("❌ Código inválido o ya utilizado.");
-          }
-        } else {
-          alert("❌ Código no encontrado.");
+    document.addEventListener("DOMContentLoaded", () => {
+      async function validarCodi() {
+        const codi = document.getElementById("codeInput").value.trim();
+        
+        if (!codi) {
+          alert("⚠️ Ingresa un código válido.");
+          return;
         }
-      } catch (error) {
-        console.error("Error al validar el código:", error);
-        alert("⚠️ Hubo un problema al validar el código. Inténtalo de nuevo.");
-      }
-    }
 
-    // 🔹 Asignar la función al objeto global window
-    window.validarCodi = validarCodi;
-    console.log("✅ validarCodi está disponible en window:", window.validarCodi);
+        try {
+          if (!window.db) {
+            console.error("❌ Firebase no está disponible en window.db");
+            alert("⚠️ Error al conectar con Firebase. Recarga la página.");
+            return;
+          }
+
+          const docRef = doc(collection(window.db, "codigos_validos"), codi);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            const datos = docSnap.data();
+            if (datos.valido === true && datos.usado === false) {
+              await updateDoc(docRef, { usado: true });
+              document.getElementById("codeSection").classList.add("hidden");
+              document.getElementById("ruletaSection").classList.remove("hidden");
+            } else {
+              alert("❌ Código inválido o ya utilizado.");
+            }
+          } else {
+            alert("❌ Código no encontrado.");
+          }
+        } catch (error) {
+          console.error("Error al validar el código:", error);
+          alert("⚠️ Hubo un problema al validar el código. Inténtalo de nuevo.");
+        }
+      }
+
+      // 🔹 Asignar la función al objeto global window
+      window.validarCodi = validarCodi;
+      console.log("✅ validarCodi está disponible en window:", window.validarCodi);
+    });
   </script>
 
   <!-- 🔹 Script para la ruleta -->
