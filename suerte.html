@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Suerte del Día</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f8f8f8;
+      padding: 30px;
+    }
+    canvas {
+      border-radius: 50%;
+      border: 6px solid #333;
+      margin: 20px 0;
+    }
+    #resultado {
+      font-size: 1.3em;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    button {
+      background: #2980b9;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+    button:hover {
+      background: #1f6391;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎉 Suerte del Día 🎉</h1>
+  <p>Gira la ruleta y descubre si ganaste algo especial.</p>
+  <canvas id="ruletaCanvas" width="400" height="400"></canvas><br>
+  <button onclick="girar()">GIRAR</button>
+  <p id="resultado"></p>
+
+  <script>
+    const premios = [
+      { nombre: "Nada 😅", probabilidad: 94.4985 },
+      { nombre: "Descuento 5% 💸 (Código: SUERTE5)", probabilidad: 3 },
+      { nombre: "1 Sobre gratis ✉️", probabilidad: 2 },
+      { nombre: "2 Sobres gratis ✉️✉️", probabilidad: 0.5 },
+      { nombre: "Carta Gradeada 🔥", probabilidad: 0.0015 }
+    ];
+
+    const colores = ["#e74c3c", "#2ecc71", "#3498db", "#f1c40f", "#9b59b6"];
+    const canvas = document.getElementById("ruletaCanvas");
+    const ctx = canvas.getContext("2d");
+    const total = premios.length;
+    const anguloPorPremio = 2 * Math.PI / total;
+    let anguloInicio = 0;
+
+    function dibujarRuleta(rotacion = 0) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < total; i++) {
+        const angulo = i * anguloPorPremio + rotacion;
+        ctx.beginPath();
+        ctx.moveTo(200, 200);
+        ctx.fillStyle = colores[i % colores.length];
+        ctx.arc(200, 200, 200, angulo, angulo + anguloPorPremio);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(200, 200);
+        ctx.rotate(angulo + anguloPorPremio / 2);
+        ctx.fillStyle = "#fff";
+        ctx.font = "13px Arial";
+        ctx.fillText(premios[i].nombre, 90, 0);
+        ctx.restore();
+      }
+    }
+
+    function seleccionarPremioAleatorio() {
+      let rnd = Math.random() * 100;
+      for (let premio of premios) {
+        if (rnd < premio.probabilidad) return premio;
+        rnd -= premio.probabilidad;
+      }
+      return premios[0];
+    }
+
+    function girar() {
+      let anguloFinal = Math.random() * 2 * Math.PI;
+      let pasos = 0;
+      let rotacion = 0;
+      let interval = setInterval(() => {
+        pasos++;
+        rotacion += 0.2;
+        dibujarRuleta(rotacion);
+        if (pasos > 30) {
+          clearInterval(interval);
+          const premio = seleccionarPremioAleatorio();
+          document.getElementById("resultado").textContent = "¡Ganaste: " + premio.nombre + "!";
+        }
+      }, 50);
+    }
+
+    // Dibujar ruleta inicial
+    dibujarRuleta();
+  </script>
+</body>
+</html>
