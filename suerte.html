@@ -35,7 +35,10 @@
 
   <!-- 🔹 Script para inicializar Firebase y validar código -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    // 🔹 Esperar a que Firebase se cargue antes de asignar la función
+    window.addEventListener("load", () => {
+      console.log("✅ Documento cargado, inicializando Firebase...");
+
       // 🔹 Inicializar Firebase
       const firebaseConfig = {
         apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
@@ -84,67 +87,6 @@
       window.validarCodi = validarCodi;
       console.log("✅ validarCodi está disponible en window:", window.validarCodi);
     });
-  </script>
-
-  <!-- 🔹 Script para la ruleta -->
-  <script>
-    let canvas, ctx, sectors, currentAngle = 0;
-
-    window.onload = function () {
-      canvas = document.getElementById("wheelCanvas");
-      ctx = canvas.getContext("2d");
-      sectors = ["🎉 Premi!", "No premi", "No premi", "No premi", "No premi",
-                 "No premi", "No premi", "No premi", "No premi", "No premi",
-                 "No premi", "No premi", "No premi", "No premi", "No premi",
-                 "No premi", "No premi", "No premi", "No premi", "No premi"];
-      drawWheel(currentAngle);
-    };
-
-    function drawWheel(angle) {
-      const numSectors = sectors.length;
-      const arc = 2 * Math.PI / numSectors;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < numSectors; i++) {
-        const start = angle + i * arc;
-        ctx.beginPath();
-        ctx.moveTo(150, 150);
-        ctx.arc(150, 150, 150, start, start + arc);
-        ctx.fillStyle = i % 2 === 0 ? "#fcd34d" : "#fbbf24";
-        ctx.fill();
-        ctx.save();
-        ctx.translate(150, 150);
-        ctx.rotate(start + arc / 2);
-        ctx.textAlign = "right";
-        ctx.fillStyle = "#000";
-        ctx.font = "14px sans-serif";
-        ctx.fillText(sectors[i], 140, 5);
-        ctx.restore();
-      }
-    }
-
-    function girarRuleta() {
-      const giro = Math.floor(Math.random() * 360) + 720;
-      const duration = 3000;
-      const start = Date.now();
-      const animate = () => {
-        const elapsed = Date.now() - start;
-        const progress = elapsed / duration;
-        if (progress < 1) {
-          currentAngle += (giro / duration) * 20;
-          drawWheel(currentAngle * Math.PI / 180);
-          requestAnimationFrame(animate);
-        } else {
-          currentAngle += giro;
-          currentAngle %= 360;
-          drawWheel(currentAngle * Math.PI / 180);
-          const selected = Math.floor((sectors.length - (currentAngle / (360 / sectors.length))) % sectors.length);
-          const result = sectors[selected];
-          document.getElementById("result").textContent =
-            result === "🎉 Premi!" ? "🎉 Enhorabona! Has guanyat un sobre!" : "Ho sentim, aquesta vegada no t'ha tocat.";
-        }
-      };
-      animate();
-    }
   </script>
 </body>
 </html>
