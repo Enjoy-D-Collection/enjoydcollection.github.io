@@ -3,213 +3,106 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Suerte del Día - Enjoy D' Collection</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <title>Ruleta Promocional</title>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Arial', sans-serif;
-      background-color: #f4f4f4;
-    }
-    header {
-      background: linear-gradient(135deg, #ffcb05, #3b4cca);
-      text-align: center;
-      color: white;
-      padding: 20px;
-    }
-    header img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 15px;
-    }
-    h1 {
-      font-family: 'Press Start 2P', cursive;
-      margin-top: 20px;
-    }
-    nav {
-      background-color: #ef5350;
-      padding: 10px;
-      text-align: center;
-    }
-    nav a {
-      color: white;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .wheel-section {
-      text-align: center;
-      margin: 60px auto;
-      font-family: 'Press Start 2P', cursive;
-      background: #fff;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      max-width: 600px;
-    }
-    .wheel-container {
-      position: relative;
-      width: 300px;
-      height: 300px;
-      margin: 0 auto;
-    }
-    .pokeball {
-      width: 300px;
-      height: 300px;
-      transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
-    }
-    .wheel-section button {
-      margin-top: 20px;
-      padding: 12px 20px;
-      background: #3b4cca;
-      color: white;
-      border: none;
-      font-size: 14px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    .wheel-section button:hover {
-      background: #2a2f99;
-    }
-    footer {
-      background-color: #3b4cca;
-      color: white;
-      text-align: center;
-      padding: 30px 20px;
-      margin-top: 60px;
-    }
+    body { font-family: sans-serif; text-align: center; padding: 2rem; }
+    canvas { margin-top: 2rem; }
+    .hidden { display: none; }
+    #result { margin-top: 1.5rem; font-size: 1.5rem; font-weight: bold; }
+    #codeSection { margin-bottom: 1.5rem; }
   </style>
 </head>
 <body>
+  <h1>Promoció Especial - Prova Sort!</h1>
 
-<header>
-  <img src="https://drive.google.com/uc?export=view&id=1OYrup3u8BjCilFFC1or8IDrT6J0BznE6" alt="Imagen cabecera">
-  <h1>Enjoy D' Collection</h1>
-  <p>¡Prueba tu suerte con la Poké Ball!</p>
-</header>
-
-<nav>
-  <a href="index.html">Inicio</a>
-</nav>
-
-<section class="wheel-section">
-  <h2>🎰 Suerte del Día</h2>
-  <p>Introduce tu código de compra y gira la Poké Ball. ¡Puedes ganar premios Pokémon únicos!</p>
-  <div class="wheel-container">
-    <img id="wheel" src="https://www.pngplay.com/wp-content/uploads/7/Pokeball-PNG-HD-Quality.png" alt="Pokeball" class="pokeball">
-    <button onclick="spinWheel()">Girar Poké Ball</button>
+  <div id="codeSection">
+    <p>Introdueix el teu codi exclusiu per accedir a la ruleta:</p>
+    <input type="text" id="codeInput" placeholder="Codi de comprador" />
+    <button onclick="validarCodi()">Validar</button>
   </div>
-</section>
 
-<!-- Modal de premio -->
-<div id="rewardModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-  background-color:rgba(0,0,0,0.8); color:white; text-align:center; padding-top:100px; z-index:1000;">
-  <div style="background:#fff; color:#000; margin:auto; padding:20px; border-radius:10px; width:90%; max-width:400px;">
-    <h2>🎉 ¡Felicidades!</h2>
-    <p id="rewardText"></p>
-    <img id="rewardImage" src="" alt="Premio" style="max-width:100%; border-radius:10px;">
-    <p><strong>Tu cupón:</strong> <span id="couponCode"></span></p>
-    <button onclick="document.getElementById('rewardModal').style.display='none'">Cerrar</button>
+  <div id="ruletaSection" class="hidden">
+    <canvas id="wheelCanvas" width="300" height="300"></canvas>
+    <br />
+    <button onclick="girarRuleta()">Girar ruleta</button>
+    <div id="result"></div>
   </div>
-</div>
 
-<footer>
-  <p>&copy; 2025 Enjoy D' Collection - Todos los derechos reservados.</p>
-</footer>
+  <script>
+    const codisValids = {
+      "ABC123": true,
+      "XYZ789": true,
+      "DEF456": true
+    };
 
-<script>
-let spinning = false;
+    let canvas, ctx, sectors, currentAngle = 0;
 
-const rewards = [
-  {
-    name: 'Pikachu Sticker',
-    image: 'https://images.pokemontcg.io/base1/58.png',
-    chance: 0.000015,
-    coupon: 'PIKA25'
-  },
-  {
-    name: 'Charmander Badge',
-    image: 'https://images.pokemontcg.io/base1/4.png',
-    chance: 0.1,
-    coupon: 'CHAR20'
-  },
-  {
-    name: 'Squirtle Pin',
-    image: 'https://images.pokemontcg.io/base1/63.png',
-    chance: 0.20,
-    coupon: 'SQUIR20'
-  },
-  {
-    name: 'Rare Candy Pack',
-    image: 'https://www.pngmart.com/files/22/Rare-Candy-PNG-Clipart.png',
-    chance: 0.05,
-    coupon: 'CANDY15'
-  },
-  {
-    name: 'Poké Ball Keychain',
-    image: 'https://www.pngplay.com/wp-content/uploads/7/Pokeball-PNG-Photos.png',
-    chance: 0.0015,
-    coupon: 'BALL10'
-  },
-  {
-    name: '✨ Ultra Rare Planta 🌱',
-    image: 'https://www.pngmart.com/files/13/Small-Plant-PNG-Photos.png',
-    chance: 0.1,
-    coupon: 'PLANTA10'
-  }
-];
+    window.onload = function () {
+      canvas = document.getElementById("wheelCanvas");
+      ctx = canvas.getContext("2d");
+      sectors = ["🎉 Premi!", "No premi", "No premi", "No premi", "No premi",
+                 "No premi", "No premi", "No premi", "No premi", "No premi",
+                 "No premi", "No premi", "No premi", "No premi", "No premi",
+                 "No premi", "No premi", "No premi", "No premi", "No premi"];
+      drawWheel(currentAngle);
+    };
 
-const validCodes = ['abc123', 'pkm2024', 'pikacode'];
-const usedCodes = [];
+    function validarCodi() {
+      const codi = document.getElementById("codeInput").value.trim();
+      if (codisValids[codi]) {
+        codisValids[codi] = false;
+        document.getElementById("codeSection").classList.add("hidden");
+        document.getElementById("ruletaSection").classList.remove("hidden");
+      } else {
+        alert("Codi invàlid o ja utilitzat.");
+      }
+    }
 
-function spinWheel() {
-  if (spinning) return;
+    function drawWheel(angle) {
+      const numSectors = sectors.length;
+      const arc = 2 * Math.PI / numSectors;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < numSectors; i++) {
+        const start = angle + i * arc;
+        ctx.beginPath();
+        ctx.moveTo(150, 150);
+        ctx.arc(150, 150, 150, start, start + arc);
+        ctx.fillStyle = i % 2 === 0 ? "#fcd34d" : "#fbbf24";
+        ctx.fill();
+        ctx.save();
+        ctx.translate(150, 150);
+        ctx.rotate(start + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#000";
+        ctx.font = "14px sans-serif";
+        ctx.fillText(sectors[i], 140, 5);
+        ctx.restore();
+      }
+    }
 
-  const code = prompt("Introduce tu código de compra:");
-  if (!validateCode(code)) {
-    alert("Código inválido o ya usado.");
-    return;
-  }
-
-  spinning = true;
-
-  const selectedIndex = getWeightedRandomIndex(rewards);
-  const degrees = 3600 + selectedIndex * 60;
-
-  const pokeball = document.getElementById("wheel");
-  pokeball.style.transform = `rotate(${degrees}deg)`;
-
-  setTimeout(() => {
-    showReward(selectedIndex);
-    spinning = false;
-  }, 4000);
-}
-
-function getWeightedRandomIndex(list) {
-  const rand = Math.random();
-  let sum = 0;
-  for (let i = 0; i < list.length; i++) {
-    sum += list[i].chance;
-    if (rand < sum) return i;
-  }
-  return list.length - 1;
-}
-
-function validateCode(code) {
-  if (!validCodes.includes(code)) return false;
-  if (usedCodes.includes(code)) return false;
-  usedCodes.push(code);
-  return true;
-}
-
-function showReward(index) {
-  const reward = rewards[index];
-  document.getElementById('rewardText').textContent = reward.name;
-  document.getElementById('rewardImage').src = reward.image;
-  document.getElementById('couponCode').textContent = reward.coupon;
-  document.getElementById('rewardModal').style.display = 'block';
-}
-</script>
-
+    function girarRuleta() {
+      const giro = Math.floor(Math.random() * 360) + 720;
+      const duration = 3000;
+      const start = Date.now();
+      const animate = () => {
+        const elapsed = Date.now() - start;
+        const progress = elapsed / duration;
+        if (progress < 1) {
+          currentAngle += (giro / duration) * 20;
+          drawWheel(currentAngle * Math.PI / 180);
+          requestAnimationFrame(animate);
+        } else {
+          currentAngle += giro;
+          currentAngle %= 360;
+          drawWheel(currentAngle * Math.PI / 180);
+          const selected = Math.floor((sectors.length - (currentAngle / (360 / sectors.length))) % sectors.length);
+          const result = sectors[selected];
+          document.getElementById("result").textContent =
+            result === "🎉 Premi!" ? "🎉 Enhorabona! Has guanyat un sobre!" : "Ho sentim, aquesta vegada no t'ha tocat.";
+        }
+      };
+      animate();
+    }
+  </script>
 </body>
 </html>
