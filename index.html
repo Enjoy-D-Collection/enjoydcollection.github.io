@@ -176,6 +176,45 @@
 
 <footer>
   <p>&copy; 2025 Enjoy D' Collection - Todos los derechos reservados.</p>
+  <script type="module">
+    // Importar Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    // Configuración de Firebase (reemplaza con tus datos)
+    const firebaseConfig = {
+        apiKey: "TU_API_KEY",
+        authDomain: "TU_PROYECTO.firebaseapp.com",
+        projectId: "TU_PROYECTO",
+        storageBucket: "TU_PROYECTO.appspot.com",
+        messagingSenderId: "TU_ID",
+        appId: "TU_APP_ID"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Función para generar y guardar un código en Firestore
+    async function generarCodigo() {
+        let codigo = Math.random().toString(36).substring(2, 10).toUpperCase();
+        await setDoc(doc(db, "codigos_validos", codigo), { valido: true });
+        document.getElementById("codigoGenerado").innerText = "Código generado: " + codigo;
+    }
+
+    // Función para validar un código ingresado
+    async function validarCodigo() {
+        let codigoIngresado = document.getElementById("inputCodigo").value;
+        let docRef = doc(db, "codigos_validos", codigoIngresado);
+        let docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            document.getElementById("mensaje").innerText = "✅ Código válido, puedes girar la ruleta.";
+        } else {
+            document.getElementById("mensaje").innerText = "❌ Código inválido.";
+        }
+    }
+</script>
 </footer>
 
 </body>
