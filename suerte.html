@@ -23,7 +23,7 @@
     const db = getFirestore(app);
 
     // 🔹 Función para validar código desde Firebase
-   async function validarCodi() {
+async function validarCodi() {
     const codi = document.getElementById("codeInput").value.trim();
     
     console.log("Código ingresado:", codi);  // 🔹 Verifica qué código se está enviando
@@ -33,10 +33,8 @@
         return;
     }
 
-import { collection, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-const docRef = doc(collection(db, "codigos_validos"), codi);
-console.log("Referencia del documento:", docRef.path);  // 🔹 Verifica si Firebase está generando la referencia correctamente
+    const docRef = doc(collection(db, "codigos_validos"), codi);
+    console.log("Referencia del documento:", docRef.path);  // 🔹 Verifica si Firebase está generando la referencia correctamente
 
     const docSnap = await getDoc(docRef);
 
@@ -54,6 +52,8 @@ console.log("Referencia del documento:", docRef.path);  // 🔹 Verifica si Fire
     } else {
         console.log("❌ Código no encontrado en Firebase.");
         alert("❌ Código no encontrado.");
+    }
+}
     }
 }
     window.validarCodi = validarCodi; // Permitir acceso desde HTML
