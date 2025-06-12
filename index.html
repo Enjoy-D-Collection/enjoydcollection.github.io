@@ -221,19 +221,18 @@
         if (docSnap.exists()) {
             let datos = docSnap.data();
             
-            if (datos.valido === true && datos.usado === false) {
-                document.getElementById("mensaje").innerText = "✅ Código válido, puedes girar la ruleta.";
-                
-                // 🔹 Marcar el código como usado en Firestore
-                await setDoc(docRef, { ...datos, usado: true });
+            import { updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-            } else {
-                document.getElementById("mensaje").innerText = "❌ Código ya utilizado.";
-            }
-        } else {
-            document.getElementById("mensaje").innerText = "❌ Código inválido.";
-        }
-    }
+if (datos.valido === true && datos.usado === false) {
+    document.getElementById("mensaje").innerText = "✅ Código válido, puedes girar la ruleta.";
+
+    // 🔹 Marcar el código como usado en Firestore sin sobrescribir el documento
+    await updateDoc(docRef, { usado: true });
+
+} else {
+    document.getElementById("mensaje").innerText = "❌ Código ya utilizado.";
+}
+
 </script>
 <footer>
   <p>&copy; 2025 Enjoy D' Collection - Todos los derechos reservados.</p>
