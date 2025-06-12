@@ -220,17 +220,23 @@ let codigo = Math.random().toString(36).substring(2, 10).toUpperCase();
     }
 
     // Función para validar código
-    async function validarCodigo() {
-        let codigoIngresado = document.getElementById("inputCodigo").value;
-        let docRef = doc(db, "codigos_validos", codigoIngresado);
-        let docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            document.getElementById("mensaje").innerText = "✅ Código válido, puedes girar la ruleta.";
-        } else {
-            document.getElementById("mensaje").innerText = "❌ Código inválido.";
-        }
+async function validarCodigo() {
+    let codigoIngresado = document.getElementById("inputCodigo").value.trim();
+    
+    if (!codigoIngresado) {
+        document.getElementById("mensaje").innerText = "⚠️ Ingresa un código válido.";
+        return;
     }
+
+    let docRef = doc(db, "codigos_validos", codigoIngresado);
+    let docSnap = await getDoc(docRef);
+
+    if (docSnap.exists() && docSnap.data().valido === true) {
+        document.getElementById("mensaje").innerText = "✅ Código válido, puedes girar la ruleta.";
+    } else {
+        document.getElementById("mensaje").innerText = "❌ Código inválido.";
+    }
+}
 </script>
 <footer>
   <p>&copy; 2025 Enjoy D' Collection - Todos los derechos reservados.</p>
