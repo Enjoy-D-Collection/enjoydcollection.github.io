@@ -91,6 +91,65 @@
       padding: 30px 20px;
       margin-top: 60px;
     }
+    /* 🎰 Estilos para la ruleta Pokémon */
+.wheel-section {
+  text-align: center;
+  margin: 60px auto;
+  font-family: 'Press Start 2P', cursive;
+  background: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.wheel-container {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+}
+
+.wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 8px solid #ffcb05;
+  position: relative;
+  transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+  transform: rotate(0deg);
+}
+
+.segment {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  background: #ffffff;
+  color: #000;
+  transform-origin: 0% 100%;
+  transform: rotate(calc(var(--i) * 60deg)) skewY(-30deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 0 0 0 100%;
+  background: repeating-conic-gradient(#f8e473 0% 16.6%, #ffffff 16.6% 33.3%);
+}
+
+.wheel-section button {
+  margin-top: 20px;
+  padding: 12px 20px;
+  background: #3b4cca;
+  color: white;
+  border: none;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.wheel-section button:hover {
+  background: #2a2f99;
+}
   </style>
 </head>
 <body>
@@ -174,10 +233,81 @@
   <p>Instagram: @enjoydcollection</p>
   <p>Facebook: Enjoy D' Collection</p>
 </section>
+<section id="suerte" class="wheel-section">
+  <h2>🎰 Suerte del Día</h2>
+  <p>Introduce tu código de compra y gira la ruleta Pokémon. ¡Puedes ganar premios especiales!</p>
+  <div class="wheel-container">
+    <div id="wheel" class="wheel">
+      <div class="segment" style="--i:0;">🎁 Pikachu</div>
+      <div class="segment" style="--i:1;">🔥 Charmander</div>
+      <div class="segment" style="--i:2;">💧 Squirtle</div>
+      <div class="segment" style="--i:3;">🍬 Rare Candy</div>
+      <div class="segment" style="--i:4;">⚪ Poké Ball</div>
+      <div class="segment" style="--i:5;">✨ Ultra Rare</div>
+    </div>
+    <button onclick="spinWheel()">Girar Ruleta</button>
+  </div>
+</section>
 
 <footer>
   <p>&copy; 2025 Enjoy D' Collection - Todos los derechos reservados.</p>
 </footer>
+<script>
+let spinning = false;
+
+function spinWheel() {
+  if (spinning) return;
+
+  const code = prompt("Introduce tu código de compra:");
+  if (!validateCode(code)) {
+    alert("Código inválido o ya usado.");
+    return;
+  }
+
+  spinning = true;
+
+  const probabilityMap = [
+    { name: 'Pikachu', chance: 0.25 },
+    { name: 'Charmander', chance: 0.20 },
+    { name: 'Squirtle', chance: 0.20 },
+    { name: 'Rare Candy', chance: 0.15 },
+    { name: 'Poké Ball', chance: 0.10 },
+    { name: 'Ultra Rare', chance: 0.10 }
+  ];
+
+  const selectedIndex = getWeightedRandomIndex(probabilityMap);
+  const degrees = 3600 + (selectedIndex * 60); // Múltiples vueltas + posición del premio
+
+  document.getElementById("wheel").style.transform = `rotate(${degrees}deg)`;
+
+  setTimeout(() => {
+    alert("🎉 ¡Ganaste: " + probabilityMap[selectedIndex].name + "!");
+    spinning = false;
+  }, 4000);
+}
+
+function getWeightedRandomIndex(weights) {
+  const rand = Math.random();
+  let sum = 0;
+  for (let i = 0; i < weights.length; i++) {
+    sum += weights[i].chance;
+    if (rand < sum) return i;
+  }
+  return weights.length - 1;
+}
+
+// Simulación de códigos válidos
+const validCodes = ['abc123', 'pkm2024', 'pikacode'];
+const usedCodes = [];
+
+function validateCode(code) {
+  if (!validCodes.includes(code)) return false;
+  if (usedCodes.includes(code)) return false;
+
+  usedCodes.push(code);
+  return true;
+}
+</script>
 
 </body>
 </html>
