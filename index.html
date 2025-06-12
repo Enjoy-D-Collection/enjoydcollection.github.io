@@ -190,53 +190,50 @@
 <!-- 🔹 Scripts para Firebase -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-    // Configuración de Firebase 
+    // 🔹 Configuración de Firebase
     const firebaseConfig = {
-       apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
-  authDomain: "codigos-5820e.firebaseapp.com",
-  projectId: "codigos-5820e",
-  storageBucket: "codigos-5820e.firebasestorage.app",
-  messagingSenderId: "231416234142",
-  appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f",
+        apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
+        authDomain: "codigos-5820e.firebaseapp.com",
+        projectId: "codigos-5820e",
+        storageBucket: "codigos-5820e.appspot.com",
+        messagingSenderId: "231416234142",
+        appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f"
     };
 
-    // Inicializar Firebase
+    // 🔹 Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Función para generar código después de una compra
-    async function procesarCompra() {
-        alert("✅ Compra realizada con éxito. Generando código...");
+    // 🔹 Función para validar código ingresado
+    async function validarCodigo() {
+        let codigoIngresado = document.getElementById("inputCodigo").value.trim();
         
-let codigo = Math.random().toString(36).substring(2, 10).toUpperCase();
-        await setDoc(doc(db, "codigos_validos", codigo), {
-            valido: true,
-            fechaCreacion: new Date().toISOString()
-        });
+        if (!codigoIngresado) {
+            document.getElementById("mensaje").innerText = "⚠️ Ingresa un código válido.";
+            return;
+        }
 
-        alert("🎉 Código generado: " + codigo);
+        let docRef = doc(db, "codigos_validos", codigoIngresado);
+        let docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            let datos = docSnap.data();
+            
+            if (datos.valido === true && datos.usado === false) {
+                document.getElementById("mensaje").innerText = "✅ Código válido, puedes girar la ruleta.";
+                
+                // 🔹 Marcar el código como usado en Firestore
+                await setDoc(docRef, { ...datos, usado: true });
+
+            } else {
+                document.getElementById("mensaje").innerText = "❌ Código ya utilizado.";
+            }
+        } else {
+            document.getElementById("mensaje").innerText = "❌ Código inválido.";
+        }
     }
-
-    // Función para validar código
-async function validarCodigo() {
-    let codigoIngresado = document.getElementById("inputCodigo").value.trim();
-    
-    if (!codigoIngresado) {
-        document.getElementById("mensaje").innerText = "⚠️ Ingresa un código válido.";
-        return;
-    }
-
-    let docRef = doc(db, "codigos_validos", codigoIngresado);
-    let docSnap = await getDoc(docRef);
-
-    if (docSnap.exists() && docSnap.data().valido === true) {
-        document.getElementById("mensaje").innerText = "✅ Código válido, puedes girar la ruleta.";
-    } else {
-        document.getElementById("mensaje").innerText = "❌ Código inválido.";
-    }
-}
 </script>
 <footer>
   <p>&copy; 2025 Enjoy D' Collection - Todos los derechos reservados.</p>
