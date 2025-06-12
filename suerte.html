@@ -1,109 +1,215 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Suerte del Día</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suerte del Día - Enjoy D' Collection</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: Arial, sans-serif;
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+    }
+    header {
+      background: linear-gradient(135deg, #ffcb05, #3b4cca);
       text-align: center;
-      background: #f8f8f8;
-      padding: 30px;
+      color: white;
+      padding: 20px;
     }
-    canvas {
-      border-radius: 50%;
-      border: 6px solid #333;
-      margin: 20px 0;
+    header img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 15px;
     }
-    #resultado {
-      font-size: 1.3em;
-      font-weight: bold;
+    h1 {
+      font-family: 'Press Start 2P', cursive;
       margin-top: 20px;
     }
-    button {
-      background: #2980b9;
+    nav {
+      background-color: #ef5350;
+      padding: 10px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .wheel-section {
+      text-align: center;
+      margin: 60px auto;
+      font-family: 'Press Start 2P', cursive;
+      background: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      max-width: 600px;
+    }
+    .wheel-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin: 0 auto;
+    }
+    .pokeball {
+      width: 300px;
+      height: 300px;
+      transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+    .wheel-section button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      background: #3b4cca;
       color: white;
       border: none;
-      padding: 10px 20px;
-      font-size: 16px;
+      font-size: 14px;
+      border-radius: 10px;
       cursor: pointer;
-      border-radius: 8px;
     }
-    button:hover {
-      background: #1f6391;
+    .wheel-section button:hover {
+      background: #2a2f99;
+    }
+    footer {
+      background-color: #3b4cca;
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+      margin-top: 60px;
     }
   </style>
 </head>
 <body>
-  <h1>🎉 Suerte del Día 🎉</h1>
-  <p>Gira la ruleta y descubre si ganaste algo especial.</p>
-  <canvas id="ruletaCanvas" width="400" height="400"></canvas><br>
-  <button onclick="girar()">GIRAR</button>
-  <p id="resultado"></p>
 
-  <script>
-    const premios = [
-      { nombre: "Nada 😅", probabilidad: 94.4985 },
-      { nombre: "Descuento 5% 💸 (Código: SUERTE5)", probabilidad: 3 },
-      { nombre: "1 Sobre gratis ✉️", probabilidad: 2 },
-      { nombre: "2 Sobres gratis ✉️✉️", probabilidad: 0.5 },
-      { nombre: "Carta Gradeada 🔥", probabilidad: 0.0015 }
-    ];
+<header>
+  <img src="https://drive.google.com/uc?export=view&id=1OYrup3u8BjCilFFC1or8IDrT6J0BznE6" alt="Imagen cabecera">
+  <h1>Enjoy D' Collection</h1>
+  <p>¡Prueba tu suerte con la Poké Ball!</p>
+</header>
 
-    const colores = ["#e74c3c", "#2ecc71", "#3498db", "#f1c40f", "#9b59b6"];
-    const canvas = document.getElementById("ruletaCanvas");
-    const ctx = canvas.getContext("2d");
-    const total = premios.length;
-    const anguloPorPremio = 2 * Math.PI / total;
-    let anguloInicio = 0;
+<nav>
+  <a href="index.html">Inicio</a>
+</nav>
 
-    function dibujarRuleta(rotacion = 0) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < total; i++) {
-        const angulo = i * anguloPorPremio + rotacion;
-        ctx.beginPath();
-        ctx.moveTo(200, 200);
-        ctx.fillStyle = colores[i % colores.length];
-        ctx.arc(200, 200, 200, angulo, angulo + anguloPorPremio);
-        ctx.fill();
+<section class="wheel-section">
+  <h2>🎰 Suerte del Día</h2>
+  <p>Introduce tu código de compra y gira la Poké Ball. ¡Puedes ganar premios Pokémon únicos!</p>
+  <div class="wheel-container">
+    <img id="wheel" src="https://www.pngplay.com/wp-content/uploads/7/Pokeball-PNG-HD-Quality.png" alt="Pokeball" class="pokeball">
+    <button onclick="spinWheel()">Girar Poké Ball</button>
+  </div>
+</section>
 
-        ctx.save();
-        ctx.translate(200, 200);
-        ctx.rotate(angulo + anguloPorPremio / 2);
-        ctx.fillStyle = "#fff";
-        ctx.font = "13px Arial";
-        ctx.fillText(premios[i].nombre, 90, 0);
-        ctx.restore();
-      }
-    }
+<!-- Modal de premio -->
+<div id="rewardModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+  background-color:rgba(0,0,0,0.8); color:white; text-align:center; padding-top:100px; z-index:1000;">
+  <div style="background:#fff; color:#000; margin:auto; padding:20px; border-radius:10px; width:90%; max-width:400px;">
+    <h2>🎉 ¡Felicidades!</h2>
+    <p id="rewardText"></p>
+    <img id="rewardImage" src="" alt="Premio" style="max-width:100%; border-radius:10px;">
+    <p><strong>Tu cupón:</strong> <span id="couponCode"></span></p>
+    <button onclick="document.getElementById('rewardModal').style.display='none'">Cerrar</button>
+  </div>
+</div>
 
-    function seleccionarPremioAleatorio() {
-      let rnd = Math.random() * 100;
-      for (let premio of premios) {
-        if (rnd < premio.probabilidad) return premio;
-        rnd -= premio.probabilidad;
-      }
-      return premios[0];
-    }
+<footer>
+  <p>&copy; 2025 Enjoy D' Collection - Todos los derechos reservados.</p>
+</footer>
 
-    function girar() {
-      let anguloFinal = Math.random() * 2 * Math.PI;
-      let pasos = 0;
-      let rotacion = 0;
-      let interval = setInterval(() => {
-        pasos++;
-        rotacion += 0.2;
-        dibujarRuleta(rotacion);
-        if (pasos > 30) {
-          clearInterval(interval);
-          const premio = seleccionarPremioAleatorio();
-          document.getElementById("resultado").textContent = "¡Ganaste: " + premio.nombre + "!";
-        }
-      }, 50);
-    }
+<script>
+let spinning = false;
 
-    // Dibujar ruleta inicial
-    dibujarRuleta();
-  </script>
+const rewards = [
+  {
+    name: 'Pikachu Sticker',
+    image: 'https://images.pokemontcg.io/base1/58.png',
+    chance: 0.000015,
+    coupon: 'PIKA25'
+  },
+  {
+    name: 'Charmander Badge',
+    image: 'https://images.pokemontcg.io/base1/4.png',
+    chance: 0.1,
+    coupon: 'CHAR20'
+  },
+  {
+    name: 'Squirtle Pin',
+    image: 'https://images.pokemontcg.io/base1/63.png',
+    chance: 0.20,
+    coupon: 'SQUIR20'
+  },
+  {
+    name: 'Rare Candy Pack',
+    image: 'https://www.pngmart.com/files/22/Rare-Candy-PNG-Clipart.png',
+    chance: 0.05,
+    coupon: 'CANDY15'
+  },
+  {
+    name: 'Poké Ball Keychain',
+    image: 'https://www.pngplay.com/wp-content/uploads/7/Pokeball-PNG-Photos.png',
+    chance: 0.0015,
+    coupon: 'BALL10'
+  },
+  {
+    name: '✨ Ultra Rare Planta 🌱',
+    image: 'https://www.pngmart.com/files/13/Small-Plant-PNG-Photos.png',
+    chance: 0.1,
+    coupon: 'PLANTA10'
+  }
+];
+
+const validCodes = ['abc123', 'pkm2024', 'pikacode'];
+const usedCodes = [];
+
+function spinWheel() {
+  if (spinning) return;
+
+  const code = prompt("Introduce tu código de compra:");
+  if (!validateCode(code)) {
+    alert("Código inválido o ya usado.");
+    return;
+  }
+
+  spinning = true;
+
+  const selectedIndex = getWeightedRandomIndex(rewards);
+  const degrees = 3600 + selectedIndex * 60;
+
+  const pokeball = document.getElementById("wheel");
+  pokeball.style.transform = `rotate(${degrees}deg)`;
+
+  setTimeout(() => {
+    showReward(selectedIndex);
+    spinning = false;
+  }, 4000);
+}
+
+function getWeightedRandomIndex(list) {
+  const rand = Math.random();
+  let sum = 0;
+  for (let i = 0; i < list.length; i++) {
+    sum += list[i].chance;
+    if (rand < sum) return i;
+  }
+  return list.length - 1;
+}
+
+function validateCode(code) {
+  if (!validCodes.includes(code)) return false;
+  if (usedCodes.includes(code)) return false;
+  usedCodes.push(code);
+  return true;
+}
+
+function showReward(index) {
+  const reward = rewards[index];
+  document.getElementById('rewardText').textContent = reward.name;
+  document.getElementById('rewardImage').src = reward.image;
+  document.getElementById('couponCode').textContent = reward.coupon;
+  document.getElementById('rewardModal').style.display = 'block';
+}
+</script>
+
 </body>
 </html>
