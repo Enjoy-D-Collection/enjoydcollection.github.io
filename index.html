@@ -120,64 +120,30 @@
       <img src="https://images.pokemontcg.io/base1/58.png" alt="Pikachu Base Set">
       <h3>Pikachu Base Set</h3>
       <p>$15</p>
-      <button>Agregar al carrito</button>
+      <button onclick="procesarCompra()">Comprar ahora</button>
     </div>
     <div class="card">
       <img src="https://images.pokemontcg.io/base1/4.png" alt="Charizard Holo">
       <h3>Charizard Holo</h3>
       <p>$300</p>
-      <button>Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://drive.google.com/uc?export=view&id=1AWRBKLBx5ZRrFk-vQVEtK_hXw2-RxbAk" alt="Producto personalizado 1">
-      <h3>Edición Especial Mewtwo</h3>
-      <p>$85</p>
-      <button>Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://drive.google.com/uc?export=view&id=1LPm7SPkGnOLekvQ9zE947pIiHed5bH3_" alt="Producto personalizado 2">
-      <h3>Zapdos Vintage</h3>
-      <p>$120</p>
-      <button>Agregar al carrito</button>
+      <button onclick="procesarCompra()">Comprar ahora</button>
     </div>
   </div>
 </section>
 
-<section id="gradadas">
-  <h2>Cartas Gradadas</h2>
-  <div class="card-gallery">
-    <div class="card">
-      <img src="https://images.pokemontcg.io/base1/6.png" alt="Gyarados PSA 10">
-      <h3>Gyarados - PSA 10</h3>
-      <p>$450</p>
-      <button>Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://images.pokemontcg.io/base1/1.png" alt="Alakazam BGS 9.5">
-      <h3>Alakazam - BGS 9.5</h3>
-      <p>$320</p>
-      <button>Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://images.pokemontcg.io/base1/3.png" alt="Venusaur Holo">
-      <h3>Venusaur Holo</h3>
-      <p>$280</p>
-      <button>Agregar al carrito</button>
-    </div>
-  </div>
-</section>
-
-<section id="contacto">
-  <h2>Contacto</h2>
-  <p>Correo: <a href="mailto:contacto@enjoycollection.com">contacto@enjoycollection.com</a></p>
-  <p>Instagram: @enjoydcollection</p>
-  <p>Facebook: Enjoy D' Collection</p>
+<section id="suerte">
+  <h2>🎰 Suerte del Día</h2>
+  <button onclick="validarCodigo()">Validar Código</button>
+  <input type="text" id="inputCodigo" placeholder="Ingresa tu código">
+  <p id="mensaje"></p>
 </section>
 
 <footer>
   <p>&copy; 2025 Enjoy D' Collection - Todos los derechos reservados.</p>
-  <script type="module">
-    // Importar Firebase
+</footer>
+
+<!-- 🔹 Scripts para Firebase -->
+<script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
@@ -195,14 +161,17 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Función para generar y guardar un código en Firestore
-    async function generarCodigo() {
+    // Función para generar código después de una compra
+    async function procesarCompra() {
+        alert("✅ Compra realizada con éxito. Generando código...");
+        
         let codigo = Math.random().toString(36).substring(2, 10).toUpperCase();
         await setDoc(doc(db, "codigos_validos", codigo), { valido: true });
-        document.getElementById("codigoGenerado").innerText = "Código generado: " + codigo;
+
+        alert("🎉 Código generado: " + codigo);
     }
 
-    // Función para validar un código ingresado
+    // Función para validar código
     async function validarCodigo() {
         let codigoIngresado = document.getElementById("inputCodigo").value;
         let docRef = doc(db, "codigos_validos", codigoIngresado);
@@ -215,7 +184,9 @@
         }
     }
 </script>
-</footer>
+
+</body>
+</html>
 
 </body>
 </html>
