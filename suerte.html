@@ -4,6 +4,53 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ruleta Promocional</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    // 🔹 Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
+      authDomain: "codigos-5820e.firebaseapp.com",
+      projectId: "codigos-5820e",
+      storageBucket: "codigos-5820e.appspot.com",
+      messagingSenderId: "231416234142",
+      appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f"
+    };
+
+    // 🔹 Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 🔹 Función para validar código desde Firebase
+    async function validarCodi() {
+      const codi = document.getElementById("codeInput").value.trim();
+      if (!codi) {
+        alert("⚠️ Ingresa un código válido.");
+        return;
+      }
+
+      const docRef = doc(db, "codigos_validos", codi);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const datos = docSnap.data();
+        if (datos.valido === true && datos.usado === false) {
+          // 🔹 Marcar el código como usado en Firebase
+          await updateDoc(docRef, { usado: true });
+
+          document.getElementById("codeSection").classList.add("hidden");
+          document.getElementById("ruletaSection").classList.remove("hidden");
+        } else {
+          alert("❌ Código inválido o ya utilizado.");
+        }
+      } else {
+        alert("❌ Código no encontrado.");
+      }
+    }
+
+    window.validarCodi = validarCodi; // Permitir acceso desde HTML
+  </script>
   <style>
     body { font-family: sans-serif; text-align: center; padding: 2rem; }
     canvas { margin-top: 2rem; }
@@ -29,12 +76,6 @@
   </div>
 
   <script>
-    const codisValids = {
-      "ABC123": true,
-      "XYZ789": true,
-      "DEF456": true
-    };
-
     let canvas, ctx, sectors, currentAngle = 0;
 
     window.onload = function () {
@@ -46,17 +87,6 @@
                  "No premi", "No premi", "No premi", "No premi", "No premi"];
       drawWheel(currentAngle);
     };
-
-    function validarCodi() {
-      const codi = document.getElementById("codeInput").value.trim();
-      if (codisValids[codi]) {
-        codisValids[codi] = false;
-        document.getElementById("codeSection").classList.add("hidden");
-        document.getElementById("ruletaSection").classList.remove("hidden");
-      } else {
-        alert("Codi invàlid o ja utilitzat.");
-      }
-    }
 
     function drawWheel(angle) {
       const numSectors = sectors.length;
