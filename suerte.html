@@ -1,93 +1,99 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ruleta Promocional</title>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js"></script>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ruleta con Firestore</title>
   <style>
     body { font-family: sans-serif; text-align: center; padding: 2rem; }
     canvas { margin-top: 2rem; }
     .hidden { display: none; }
     #result { margin-top: 1.5rem; font-size: 1.5rem; font-weight: bold; }
-    #codeSection { margin-bottom: 1.5rem; }
   </style>
+
+  <!-- ✅ Firebase SDK desde CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <h1>Promoción Especial - ¡Prueba tu suerte!</h1>
-
+  <h1>🎯 Promoción Especial - ¡Prueba tu suerte!</h1>
   <div id="codeSection">
-    <p>Introduce tu código exclusivo para acceder a la ruleta:</p>
-    <input type="text" id="codeInput" placeholder="Código de comprador">
-    <button id="validateBtn">Validar</button>
+    <input type="text" id="codeInput" placeholder="Introduce tu código">
+    <button onclick="validarCodigo()">Validar</button>
   </div>
 
   <div id="ruletaSection" class="hidden">
     <canvas id="wheelCanvas" width="300" height="300"></canvas>
     <br>
-    <button id="spinBtn" disabled>Girar ruleta</button>
+    <button onclick="girar()">🎡 Girar</button>
     <div id="result"></div>
   </div>
 
   <script>
-    // Configuración de Firebase
+    // ✅ Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
       authDomain: "codigos-5820e.firebaseapp.com",
       projectId: "codigos-5820e",
       storageBucket: "codigos-5820e.appspot.com",
       messagingSenderId: "231416234142",
-      appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f",
-      measurementId: "G-YJ7E1HKKD3"
+      appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f"
     };
 
-    // Inicializar Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
     async function validarCodigo() {
       const codigo = document.getElementById("codeInput").value.trim();
-      if (!codigo) {
-        alert("⚠️ Ingresa un código válido.");
-        return;
-      }
+      const ref = db.collection("codigos_validos").doc(codigo);
+      const docSnap = await ref.get();
 
-      try {
-        const docRef = db.collection("codigos_validos").doc(codigo);
-        const docSnap = await docRef.get();
+      if (docSnap.exists && docSnap.data().valido && !docSnap.data().usado) {
+        await ref.update({ usado: true });
 
-        if (docSnap.exists) {
-          const datos = docSnap.data();
-          if (datos.valido && !datos.usado) {
-            document.getElementById("codeSection").classList.add("hidden");
-            document.getElementById("ruletaSection").classList.remove("hidden");
-            document.getElementById("spinBtn").disabled = false;
-
-            document.getElementById("spinBtn").addEventListener("click", async () => {
-              girarRuleta();
-              await docRef.update({ usado: true });
-              alert("✅ Tu código ha sido utilizado. No puedes girar de nuevo.");
-              document.getElementById("spinBtn").disabled = true;
-            });
-          } else {
-            alert("❌ Código inválido o ya utilizado.");
-          }
-        } else {
-          alert("❌ Código no encontrado.");
-        }
-      } catch (error) {
-        console.error("Error al validar el código:", error);
-        alert("⚠️ Hubo un problema al validar el código.");
+        document.getElementById("codeSection").classList.add("hidden");
+        document.getElementById("ruletaSection").classList.remove("hidden");
+        dibujarRuleta();
+      } else {
+        alert("❌ Código inválido o ya utilizado.");
       }
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
-      document.getElementById("validateBtn").addEventListener("click", validarCodigo);
-    });
+    const premios = [
+      "🎁 FREE PACK",
+      "🎁 FREE PACK X2",
+      "💰 5% DESCUENTO",
+      "🏆 CARTA GRADED",
+      "❌ Nada"
+    ];
+
+    function dibujarRuleta() {
+      const canvas = document.getElementById("wheelCanvas");
+      const ctx = canvas.getContext("2d");
+      const angulo = 2 * Math.PI / premios.length;
+      const colores = ["#FFD700", "#FF4500", "#32CD32", "#1E90FF", "#D3D3D3"];
+
+      for (let i = 0; i < premios.length; i++) {
+        ctx.beginPath();
+        ctx.fillStyle = colores[i];
+        ctx.moveTo(150, 150);
+        ctx.arc(150, 150, 150, i * angulo, (i + 1) * angulo);
+        ctx.fill();
+        ctx.closePath();
+
+        ctx.fillStyle = "#000";
+        ctx.font = "13px sans-serif";
+        ctx.textAlign = "center";
+        const x = 150 + Math.cos(i * angulo + angulo / 2) * 100;
+        const y = 150 + Math.sin(i * angulo + angulo / 2) * 100;
+        ctx.fillText(premios[i], x, y);
+      }
+    }
+
+    function girar() {
+      const ganador = premios[Math.floor(Math.random() * premios.length)];
+      document.getElementById("result").textContent = `🎉 Resultado: ${ganador}`;
+    }
   </script>
 </body>
 </html>
