@@ -30,15 +30,6 @@
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("validateBtn").addEventListener("click", validarCodi);
-        document.getElementById("spinBtn").addEventListener("click", girarRuleta);
-        dibujarRuleta();
-    });
-
-    let anguloActual = 0;
-    let girando = false;
-
     function validarCodi() {
         const codigoIngresado = document.getElementById("codeInput").value.trim();
         
@@ -137,6 +128,12 @@
             ctx.fillText(premios[i], x, y);
         }
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("validateBtn").addEventListener("click", validarCodi);
+        document.getElementById("spinBtn").addEventListener("click", girarRuleta);
+        dibujarRuleta();
+    });
   </script>
 </body>
 </html>
