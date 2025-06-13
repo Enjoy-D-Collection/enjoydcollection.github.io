@@ -12,16 +12,15 @@
     #codeSection { margin-bottom: 1.5rem; }
   </style>
 
-  <!-- Firebase CDN -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js"></script>
+  <!-- Firebase CDN (versión correcta) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
 </head>
 <body>
   <h1>Promoción Especial - ¡Prueba tu suerte!</h1>
 
   <div id="codeSection">
-    <!-- ✅ Corrección: el atributo 'for' coincide con el 'id' del input -->
     <label for="codeInput">Introduce tu código exclusivo para acceder a la ruleta:</label>
     <input type="text" id="codeInput" name="codeInput" placeholder="Código de comprador">
     <button id="validateBtn">Validar</button>
@@ -35,7 +34,7 @@
   </div>
 
   <script>
-    // Configuración de Firebase
+    // ✅ Configuración correcta de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
       authDomain: "codigos-5820e.firebaseapp.com",
@@ -46,7 +45,7 @@
       measurementId: "G-YJ7E1HKKD3"
     };
 
-    // Inicializar Firebase
+    // ✅ Inicializar Firebase correctamente
     firebase.initializeApp(firebaseConfig);
     const analytics = firebase.analytics();
     const db = firebase.firestore();
