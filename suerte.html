@@ -63,21 +63,45 @@
   </script>
 
   <!-- 🔹 Script para manejar eventos (No módulo) -->
-  <script>
+ <script>
     document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("validateBtn").addEventListener("click", validarCodi);
-      document.getElementById("spinBtn").addEventListener("click", girarRuleta);
+        document.getElementById("validateBtn").addEventListener("click", validarCodi);
+        document.getElementById("spinBtn").addEventListener("click", girarRuleta);
     });
 
-    // 🔹 Función para girar la ruleta
+    // 🔹 Función para girar la ruleta con probabilidades ajustadas
     function girarRuleta() {
-      const resultDiv = document.getElementById("result");
-      const premios = ["🎉 10% de descuento", "🎁 Producto gratis", "⭐ 5€ de regalo", "💥 20% de descuento"];
-      const premio = premios[Math.floor(Math.random() * premios.length)];
+        const resultDiv = document.getElementById("result");
 
-      resultDiv.innerHTML = `¡Felicidades! Has ganado: ${premio}`;
+        // 🔹 Definir premios y sus probabilidades
+        const premios = [
+            { nombre: "🎁 FREE PACK", probabilidad: 0.005 }, // 0.5%
+            { nombre: "🎁 FREE PACK X2", probabilidad: 0.0025 }, // 0.25%
+            { nombre: "💰 DISCOUNT 5%", probabilidad: 0.06 }, // 6%
+            { nombre: "🏆 FREE GRADED CARD", probabilidad: 0.0000015 }, // 0.00015%
+            { nombre: "❌ No ganaste esta vez", probabilidad: 0.9324985 } // Resto de probabilidades
+        ];
+
+        // 🔹 Generar número aleatorio entre 0 y 1
+        const random = Math.random();
+        console.log("Número aleatorio generado:", random); // 🔹 Depuración
+
+        // 🔹 Determinar el premio según el rango acumulativo
+        let acumulado = 0;
+        let premioGanado = "❌ No ganaste esta vez"; // Por defecto
+
+        for (let premio of premios) {
+            acumulado += premio.probabilidad;
+            if (random <= acumulado) {
+                premioGanado = premio.nombre;
+                break;
+            }
+        }
+
+        // 🔹 Mostrar el resultado
+        resultDiv.innerHTML = `¡Felicidades! Has ganado: ${premioGanado}`;
     }
-  </script>
+</script>
 
   <style>
     body { font-family: sans-serif; text-align: center; padding: 2rem; }
