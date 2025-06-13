@@ -5,61 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruleta Promocional</title>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
-      authDomain: "codigos-5820e.firebaseapp.com",
-      projectId: "codigos-5820e",
-      storageBucket: "codigos-5820e.firebasestorage.app",
-      messagingSenderId: "231416234142",
-      appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f",
-      measurementId: "G-YJ7E1HKKD3"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    async function validarCodi() {
-      const codigo = document.getElementById("codeInput").value.trim();
-      const codeSection = document.getElementById("codeSection");
-      const ruletaSection = document.getElementById("ruletaSection");
-
-      if (!codigo) {
-        alert("⚠️ Ingresa un código válido.");
-        return;
-      }
-
-      try {
-        const docRef = doc(db, "codigos_validos", codigo);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const datos = docSnap.data();
-          if (datos.valido === true && datos.usado === false) {
-            await updateDoc(docRef, { usado: true });
-
-            codeSection.classList.add("hidden");
-            ruletaSection.classList.remove("hidden");
-
-            document.getElementById("spinBtn").disabled = false;
-          } else {
-            alert("❌ Código inválido o ya utilizado.");
-          }
-        } else {
-          alert("❌ Código no encontrado.");
-        }
-      } catch (error) {
-        console.error("Error al validar el código:", error);
-        alert("⚠️ Hubo un problema al validar el código.");
-      }
-    }
-
-    window.validarCodi = validarCodi;
-  </script>
-
   <script>
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("validateBtn").addEventListener("click", validarCodi);
@@ -79,24 +24,16 @@
         const resultDiv = document.getElementById("result");
 
         const premios = [
-            { nombre: "🎁 FREE PACK", probabilidad: 0.005 },
-            { nombre: "🎁 FREE PACK X2", probabilidad: 0.0025 },
-            { nombre: "💰 DISCOUNT 5%", probabilidad: 0.06 },
-            { nombre: "🏆 FREE GRADED CARD", probabilidad: 0.0000015 },
-            { nombre: "❌ No ganaste esta vez", probabilidad: 0.9324985 }
+            "🎁 FREE PACK",
+            "🎁 FREE PACK X2",
+            "💰 DISCOUNT 5%",
+            "🏆 FREE GRADED CARD",
+            "❌ No ganaste"
         ];
 
-        let acumulado = 0;
-        let premioGanado = "❌ No ganaste esta vez";
-        const random = Math.random();
-
-        for (let premio of premios) {
-            acumulado += premio.probabilidad;
-            if (random <= acumulado) {
-                premioGanado = premio.nombre;
-                break;
-            }
-        }
+        const colores = ["#FFD700", "#FF4500", "#32CD32", "#1E90FF", "#D3D3D3"];
+        const totalPremios = premios.length;
+        const anguloPorPremio = (2 * Math.PI) / totalPremios;
 
         let velocidad = 20;
         let freno = 0.98;
@@ -117,7 +54,8 @@
             if (velocidad > 0.1) {
                 requestAnimationFrame(animarGiro);
             } else {
-                resultDiv.innerHTML = `¡Felicidades! Has ganado: ${premioGanado}`;
+                let premioIndex = Math.floor((anguloActual % (2 * Math.PI)) / anguloPorPremio);
+                resultDiv.innerHTML = `¡Felicidades! Has ganado: ${premios[premioIndex]}`;
                 document.getElementById("spinBtn").disabled = true;
                 girando = false;
             }
@@ -151,12 +89,12 @@
             ctx.closePath();
 
             ctx.fillStyle = "black";
-            ctx.font = "14px Arial";
+            ctx.font = "16px Arial";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
-            let x = canvas.width / 2 + Math.cos(i * anguloPorPremio + anguloPorPremio / 2) * 80;
-            let y = canvas.height / 2 + Math.sin(i * anguloPorPremio + anguloPorPremio / 2) * 80;
+            let x = canvas.width / 2 + Math.cos(i * anguloPorPremio + anguloPorPremio / 2) * 100;
+            let y = canvas.height / 2 + Math.sin(i * anguloPorPremio + anguloPorPremio / 2) * 100;
 
             ctx.fillText(premios[i], x, y);
         }
