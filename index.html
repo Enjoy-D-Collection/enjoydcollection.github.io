@@ -105,6 +105,7 @@
   <a href="#inicio">Inicio</a>
   <a href="#cartas">Cartas</a>
   <a href="#gradadas">Gradadas</a>
+  <a href="#booster">Booster Japón</a>
   <a href="suerte.html">Suerte del Día</a>
   <a href="#contacto">Contacto</a>
 </nav>
@@ -144,9 +145,45 @@
     </div>
     <div class="card">
       <img src="https://images.pokemontcg.io/base1/3.png" alt="Venusaur Holo">
-      <h3>Venusaur Holo</h3>
+      <h3>Venusaur Holo - PSA 10</h3>
       <p>$280</p>
       <button>Agregar al carrito</button>
+    </div>
+    <div class="card">
+      <img src="https://images.pokemontcg.io/base2/2.png" alt="Blastoise PSA 10">
+      <h3>Blastoise - PSA 10</h3>
+      <p>$500</p>
+      <button>Agregar al carrito</button>
+    </div>
+    <div class="card">
+      <img src="https://images.pokemontcg.io/base2/12.png" alt="Mewtwo PSA 10">
+      <h3>Mewtwo - PSA 10</h3>
+      <p>$460</p>
+      <button>Agregar al carrito</button>
+    </div>
+  </div>
+</section>
+
+<section id="booster">
+  <h2>Booster Japón</h2>
+  <div class="card-gallery">
+    <div class="card">
+      <img src="https://images.pokemontcg.io/sm1/1.png" alt="Booster Sol y Luna Japonés">
+      <h3>Booster Sol y Luna (JP)</h3>
+      <p>$6</p>
+      <button>Comprar</button>
+    </div>
+    <div class="card">
+      <img src="https://images.pokemontcg.io/sm3/15.png" alt="Booster Sombra Ardiente JP">
+      <h3>Booster Sombra Ardiente (JP)</h3>
+      <p>$7</p>
+      <button>Comprar</button>
+    </div>
+    <div class="card">
+      <img src="https://images.pokemontcg.io/sm4/34.png" alt="Booster Ultra Prisma JP">
+      <h3>Booster Ultra Prisma (JP)</h3>
+      <p>$8</p>
+      <button>Comprar</button>
     </div>
   </div>
 </section>
@@ -169,17 +206,13 @@
   <p>&copy; 2025 Enjoy D' Collection - Todos los derechos reservados.</p>
 </footer>
 
-<!-- 🔹 Script para validar código -->
 <script>
     async function validarCodigo() {
         let codigoIngresado = document.getElementById("inputCodigo").value.trim();
-        
         if (!codigoIngresado) {
             document.getElementById("mensaje").innerText = "⚠️ Ingresa un código válido.";
             return;
         }
-
-        // 🔹 Enviar código a `suerte.html` para validación
         window.location.href = `suerte.html?codigo=${codigoIngresado}`;
     }
 </script>
