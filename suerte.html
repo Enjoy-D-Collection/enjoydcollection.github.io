@@ -11,12 +11,13 @@
     #result { margin-top: 1.5rem; font-size: 1.5rem; font-weight: bold; }
   </style>
 
-  <!-- ✅ Firebase SDK desde CDN -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <h1>🎯 Promoción Especial - ¡Prueba tu suerte!</h1>
+
   <div id="codeSection">
     <input type="text" id="codeInput" placeholder="Introduce tu código">
     <button onclick="validarCodigo()">Validar</button>
@@ -25,12 +26,12 @@
   <div id="ruletaSection" class="hidden">
     <canvas id="wheelCanvas" width="300" height="300"></canvas>
     <br>
-    <button onclick="girar()">🎡 Girar</button>
+    <button id="spinBtn" onclick="girar()">🎡 Girar</button>
     <div id="result"></div>
   </div>
 
   <script>
-    // ✅ Configuración de Firebase
+    // Config Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
       authDomain: "codigos-5820e.firebaseapp.com",
@@ -42,57 +43,117 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
-    async function validarCodigo() {
-      const codigo = document.getElementById("codeInput").value.trim();
-      const ref = db.collection("codigos_validos").doc(codigo);
-      const docSnap = await ref.get();
-
-      if (docSnap.exists && docSnap.data().valido && !docSnap.data().usado) {
-        await ref.update({ usado: true });
-
-        document.getElementById("codeSection").classList.add("hidden");
-        document.getElementById("ruletaSection").classList.remove("hidden");
-        dibujarRuleta();
-      } else {
-        alert("❌ Código inválido o ya utilizado.");
-      }
-    }
+    let docRef = null;
+    let yaGirado = false;
 
     const premios = [
-      "🎁 FREE PACK",
-      "🎁 FREE PACK X2",
-      "💰 5% DESCUENTO",
-      "🏆 CARTA GRADED",
-      "❌ Nada"
+      { texto: "🎁 FREE PACK", prob: 2 },
+      { texto: "🎁 FREE PACK X2", prob: 0.75 },
+      { texto: "💰 5% DESCUENTO", prob: 6 },
+      { texto: "🏆 CARTA GRADED", prob: 0.00015 },
+      { texto: "❌ Nada", prob: 91.24985 } // el resto
     ];
 
-    function dibujarRuleta() {
+    function validarCodigo() {
+      const codigo = document.getElementById("codeInput").value.trim();
+      if (!codigo) return alert("⚠️ Ingresa un código válido.");
+
+      docRef = db.collection("codigos_validos").doc(codigo);
+      docRef.get().then((docSnap) => {
+        if (docSnap.exists && docSnap.data().valido && !docSnap.data().usado) {
+          docRef.update({ usado: true });
+          document.getElementById("codeSection").classList.add("hidden");
+          document.getElementById("ruletaSection").classList.remove("hidden");
+          dibujarRuleta();
+        } else {
+          alert("❌ Código inválido o ya utilizado.");
+        }
+      }).catch((err) => {
+        console.error(err);
+        alert("⚠️ Error al validar código.");
+      });
+    }
+
+    function elegirPremio() {
+      const rand = Math.random() * 100;
+      let acumulado = 0;
+      for (let premio of premios) {
+        acumulado += premio.prob;
+        if (rand <= acumulado) return premio.texto;
+      }
+      return "❌ Nada";
+    }
+
+    function dibujarRuleta(resultado = null) {
       const canvas = document.getElementById("wheelCanvas");
       const ctx = canvas.getContext("2d");
-      const angulo = 2 * Math.PI / premios.length;
+      ctx.clearRect(0, 0, 300, 300);
+      const secciones = premios.map(p => p.texto);
+      const angulo = 2 * Math.PI / secciones.length;
       const colores = ["#FFD700", "#FF4500", "#32CD32", "#1E90FF", "#D3D3D3"];
 
-      for (let i = 0; i < premios.length; i++) {
+      for (let i = 0; i < secciones.length; i++) {
         ctx.beginPath();
-        ctx.fillStyle = colores[i];
+        ctx.fillStyle = colores[i % colores.length];
         ctx.moveTo(150, 150);
         ctx.arc(150, 150, 150, i * angulo, (i + 1) * angulo);
         ctx.fill();
         ctx.closePath();
 
+        ctx.save();
+        ctx.translate(150, 150);
+        ctx.rotate(i * angulo + angulo / 2);
+        ctx.textAlign = "right";
         ctx.fillStyle = "#000";
         ctx.font = "13px sans-serif";
-        ctx.textAlign = "center";
-        const x = 150 + Math.cos(i * angulo + angulo / 2) * 100;
-        const y = 150 + Math.sin(i * angulo + angulo / 2) * 100;
-        ctx.fillText(premios[i], x, y);
+        ctx.fillText(secciones[i], 140, 5);
+        ctx.restore();
+      }
+
+      if (resultado) {
+        document.getElementById("result").textContent = `🎉 Resultado: ${resultado}`;
       }
     }
 
     function girar() {
-      const ganador = premios[Math.floor(Math.random() * premios.length)];
-      document.getElementById("result").textContent = `🎉 Resultado: ${ganador}`;
+      if (yaGirado) {
+        alert("⚠️ Solo puedes girar una vez.");
+        return;
+      }
+
+      yaGirado = true;
+      document.getElementById("spinBtn").disabled = true;
+
+      const resultado = elegirPremio();
+      const canvas = document.getElementById("wheelCanvas");
+      const ctx = canvas.getContext("2d");
+
+      let start = 0;
+      const total = 360 * 5 + Math.floor(Math.random() * 360);
+      const duracion = 4000;
+      const inicio = performance.now();
+
+      function animarRuleta(now) {
+        const tiempo = now - inicio;
+        const progreso = Math.min(tiempo / duracion, 1);
+        const easing = 1 - Math.pow(1 - progreso, 3); // ease-out
+        const anguloActual = start + total * easing;
+
+        ctx.save();
+        ctx.translate(150, 150);
+        ctx.rotate((anguloActual * Math.PI) / 180);
+        ctx.translate(-150, -150);
+        dibujarRuleta();
+        ctx.restore();
+
+        if (progreso < 1) {
+          requestAnimationFrame(animarRuleta);
+        } else {
+          dibujarRuleta(resultado);
+        }
+      }
+
+      requestAnimationFrame(animarRuleta);
     }
   </script>
 </body>
