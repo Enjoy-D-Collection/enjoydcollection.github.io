@@ -15,6 +15,20 @@
     let anguloActual = 0;
     let girando = false;
 
+    function validarCodi() {
+        const codigoIngresado = document.getElementById("codeInput").value.trim();
+        
+        // Lista de códigos válidos de Firestone
+        const codigosValidos = ["FIRE123", "STONE456", "FS789", "PROMOFIRE"]; 
+
+        if (codigosValidos.includes(codigoIngresado)) {
+            document.getElementById("ruletaSection").classList.remove("hidden");
+            document.getElementById("spinBtn").disabled = false;
+        } else {
+            alert("Código inválido. Inténtalo de nuevo.");
+        }
+    }
+
     function girarRuleta() {
         if (girando) return; // Evitar múltiples giros
         girando = true;
