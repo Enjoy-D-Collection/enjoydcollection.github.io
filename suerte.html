@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruleta Promocional</title>
-
   <style>
     body { font-family: sans-serif; text-align: center; padding: 2rem; }
     canvas { margin-top: 2rem; }
@@ -30,10 +29,10 @@
   </div>
 
   <script type="module">
-    // Importar Firebase
-   // Importar Firebase correctamente con npm
-import { initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+    // Importar Firebase correctamente con módulos ES6
+    import { initializeApp } from "firebase/app";
+    import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+    import { getAnalytics } from "firebase/analytics";
 
     // Configuración de Firebase
     const firebaseConfig = {
@@ -48,6 +47,7 @@ import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 
     // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
     const db = getFirestore(app);
 
     async function validarCodigo() {
