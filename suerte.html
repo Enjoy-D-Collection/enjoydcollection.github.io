@@ -1,48 +1,101 @@
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruleta Promocional</title>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
-    authDomain: "codigos-5820e.firebaseapp.com",
-    projectId: "codigos-5820e",
-    storageBucket: "codigos-5820e.appspot.com",
-    messagingSenderId: "231416234142",
-    appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f"
-  };
+  <script type="module">
+    // 🔹 Importar Firebase desde el SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    // 🔹 Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
+      authDomain: "codigos-5820e.firebaseapp.com",
+      projectId: "codigos-5820e",
+      storageBucket: "codigos-5820e.firebasestorage.app",
+      messagingSenderId: "231416234142",
+      appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f",
+      measurementId: "G-YJ7E1HKKD3"
+    };
 
-  async function validarCodi() {
-    const codi = document.getElementById("codeInput").value.trim();
+    // 🔹 Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    if (!codi) {
-      alert("⚠️ Ingresa un código válido.");
-      return;
-    }
+    // 🔹 Función para validar código en Firestore
+    async function validarCodigo() {
+      const codigo = document.getElementById("codeInput").value.trim();
+      const codeSection = document.getElementById("codeSection");
+      const ruletaSection = document.getElementById("ruletaSection");
 
-    try {
-      const docRef = doc(db, "codigos_validos", codi);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const datos = docSnap.data();
-        if (datos.valido === true && datos.usado === false) {
-          await updateDoc(docRef, { usado: true });
-          document.getElementById("codeSection").classList.add("hidden");
-          document.getElementById("ruletaSection").classList.remove("hidden");
-        } else {
-          alert("❌ Código inválido o ya utilizado.");
-        }
-      } else {
-        alert("❌ Código no encontrado.");
+      if (!codigo) {
+        alert("⚠️ Ingresa un código válido.");
+        return;
       }
-    } catch (error) {
-      console.error("Error al validar el código:", error);
-      alert("⚠️ Hubo un problema al validar el código. Inténtalo de nuevo.");
-    }
-  }
 
-  window.validarCodi = validarCodi;
-</script>
+      try {
+        const docRef = doc(db, "codigos_validos", codigo);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const datos = docSnap.data();
+          if (datos.valido === true && datos.usado === false) {
+            await updateDoc(docRef, { usado: true });
+            codeSection.classList.add("hidden");
+            ruletaSection.classList.remove("hidden");
+          } else {
+            alert("❌ Código inválido o ya utilizado.");
+          }
+        } else {
+          alert("❌ Código no encontrado.");
+        }
+      } catch (error) {
+        console.error("Error al validar el código:", error);
+        alert("⚠️ Hubo un problema al validar el código.");
+      }
+    }
+
+    // 🔹 Función para girar la ruleta
+    function girarRuleta() {
+      const resultDiv = document.getElementById("result");
+      const premios = ["🎉 10% de descuento", "🎁 Producto gratis", "⭐ 5€ de regalo", "💥 20% de descuento"];
+      const premio = premios[Math.floor(Math.random() * premios.length)];
+
+      resultDiv.innerHTML = `¡Felicidades! Has ganado: ${premio}`;
+    }
+
+    // 🔹 Asignar eventos a los botones
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("validateBtn").addEventListener("click", validarCodigo);
+      document.getElementById("spinBtn").addEventListener("click", girarRuleta);
+    });
+  </script>
+
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2rem; }
+    canvas { margin-top: 2rem; }
+    .hidden { display: none; }
+    #result { margin-top: 1.5rem; font-size: 1.5rem; font-weight: bold; }
+    #codeSection { margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Promoción Especial - ¡Prueba tu suerte!</h1>
+
+  <div id="codeSection">
+    <p>Introduce tu código exclusivo para acceder a la ruleta:</p>
+    <input type="text" id="codeInput" placeholder="Código de comprador">
+    <button id="validateBtn">Validar</button>
+  </div>
+
+  <div id="ruletaSection" class="hidden">
+    <canvas id="wheelCanvas" width="300" height="300"></canvas>
+    <br>
+    <button id="spinBtn">Girar ruleta</button>
+    <div id="result"></div>
+  </div>
+</body>
+</html>
