@@ -18,8 +18,7 @@
 
   <div id="codeSection">
     <p>Introduce tu código exclusivo para acceder a la ruleta:</p>
-    <label for="codeInput">Código de comprador:</label>
-    <input type="text" id="codeInput" name="codeInput" placeholder="Código de comprador">
+    <input type="text" id="codeInput" placeholder="Código de comprador">
     <button id="validateBtn">Validar</button>
   </div>
 
@@ -30,25 +29,25 @@
     <div id="result"></div>
   </div>
 
-  <!-- Importar Firebase desde la CDN con compatibilidad -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.6/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.6/firebase-firestore-compat.js"></script>
+  <script type="module">
+    // Importar Firebase
+    import { initializeApp } from "firebase/app";
+    import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 
-  <script>
     // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
       authDomain: "codigos-5820e.firebaseapp.com",
       projectId: "codigos-5820e",
-      storageBucket: "codigos-5820e.firebasestorage.app",
+      storageBucket: "codigos-5820e.appspot.com", // Corregido
       messagingSenderId: "231416234142",
       appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f",
       measurementId: "G-YJ7E1HKKD3"
     };
 
     // Inicializar Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
     async function validarCodigo() {
         const codigo = document.getElementById("codeInput").value.trim();
@@ -62,10 +61,10 @@
 
         try {
             console.log("Buscando código en Firestore:", codigo);
-            const docRef = db.collection("codigos_validos").doc(codigo);
-            const docSnap = await docRef.get();
+            const docRef = doc(db, "codigos_validos", codigo); // Asegurando la colección correcta
+            const docSnap = await getDoc(docRef);
 
-            if (docSnap.exists) {
+            if (docSnap.exists()) {
                 console.log("✅ Código encontrado:", docSnap.data());
                 const datos = docSnap.data();
 
@@ -77,7 +76,7 @@
 
                     document.getElementById("spinBtn").addEventListener("click", async () => {
                         girarRuleta();
-                        await docRef.update({ usado: true });
+                        await updateDoc(docRef, { usado: true });
                         alert("✅ Tu código ha sido utilizado. No puedes girar de nuevo.");
                         document.getElementById("spinBtn").disabled = true;
                     });
@@ -102,8 +101,8 @@
         const premios = [
             "🎁 FREE PACK",
             "🎁 FREE PACK X2",
-            "💰 DESCUENTO 5%",
-            "🏆 CARTA GRADUADA GRATIS",
+            "💰 DISCOUNT 5%",
+            "🏆 FREE GRADED CARD",
             "❌ No ganaste"
         ];
 
