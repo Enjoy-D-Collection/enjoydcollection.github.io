@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruleta Promocional</title>
 
+  <!-- 🔹 Script de Firebase (Módulo) -->
   <script type="module">
-    // 🔹 Importar Firebase desde el SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
@@ -58,6 +58,17 @@
       }
     }
 
+    // 🔹 Hacer que validarCodi esté disponible globalmente
+    window.validarCodi = validarCodi;
+  </script>
+
+  <!-- 🔹 Script para manejar eventos (No módulo) -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("validateBtn").addEventListener("click", validarCodi);
+      document.getElementById("spinBtn").addEventListener("click", girarRuleta);
+    });
+
     // 🔹 Función para girar la ruleta
     function girarRuleta() {
       const resultDiv = document.getElementById("result");
@@ -66,15 +77,6 @@
 
       resultDiv.innerHTML = `¡Felicidades! Has ganado: ${premio}`;
     }
-
-    // 🔹 Asignar eventos a los botones cuando el DOM esté listo
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("validateBtn").addEventListener("click", validarCodi);
-      document.getElementById("spinBtn").addEventListener("click", girarRuleta);
-    });
-
-    // 🔹 Hacer que validarCodi esté disponible globalmente
-    window.validarCodi = validarCodi;
   </script>
 
   <style>
