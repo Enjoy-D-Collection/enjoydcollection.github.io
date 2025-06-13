@@ -60,20 +60,20 @@
         console.log("Código ingresado:", codigoIngresado);
 
         try {
-            // Referencia al documento en Firestore
-            const docRef = doc(db, "codigos", codigoIngresado);
+            // 🔥 Cambiar la colección a "codigos_validos"
+            const docRef = doc(db, "codigos_validos", codigoIngresado);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
-                console.log("Documento encontrado:", docSnap.data());
+                console.log("✅ Código válido:", docSnap.data());
                 document.getElementById("ruletaSection").classList.remove("hidden");
                 document.getElementById("spinBtn").disabled = false;
             } else {
-                console.log("Código inválido.");
+                console.log("❌ Código inválido.");
                 alert("Código inválido. Inténtalo de nuevo.");
             }
         } catch (error) {
-            console.error("Error al acceder a Firestore:", error);
+            console.error("🚨 Error al acceder a Firestore:", error);
             alert("Hubo un error al validar el código. Revisa la consola para más detalles.");
         }
     }
