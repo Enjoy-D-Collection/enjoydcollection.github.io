@@ -29,20 +29,43 @@
     <div id="result"></div>
   </div>
 
-  <script>
-    function validarCodi() {
+  <script type="module">
+    // Importar Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
+      authDomain: "codigos-5820e.firebaseapp.com",
+      projectId: "codigos-5820e",
+      storageBucket: "codigos-5820e.firebasestorage.app",
+      messagingSenderId: "231416234142",
+      appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f",
+      measurementId: "G-YJ7E1HKKD3"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function validarCodi() {
         const codigoIngresado = document.getElementById("codeInput").value.trim();
         
-        // Lista de códigos válidos de Firestone
-        const codigosValidos = ["FIRE123", "STONE456", "FS789", "PROMOFIRE"]; 
+        // Referencia al documento en Firestore
+        const docRef = doc(db, "codigos", codigoIngresado);
+        const docSnap = await getDoc(docRef);
 
-        if (codigosValidos.includes(codigoIngresado)) {
+        if (docSnap.exists()) {
             document.getElementById("ruletaSection").classList.remove("hidden");
             document.getElementById("spinBtn").disabled = false;
         } else {
             alert("Código inválido. Inténtalo de nuevo.");
         }
     }
+
+    let anguloActual = 0;
+    let girando = false;
 
     function girarRuleta() {
         if (girando) return; // Evitar múltiples giros
@@ -52,12 +75,13 @@
         const ctx = canvas.getContext("2d");
         const resultDiv = document.getElementById("result");
 
+        // Premios con porcentajes de probabilidad
         const premios = [
-            "🎁 FREE PACK",
-            "🎁 FREE PACK X2",
-            "💰 DISCOUNT 5%",
-            "🏆 FREE GRADED CARD",
-            "❌ No ganaste"
+            { nombre: "🎁 FREE PACK", probabilidad: 30 },
+            { nombre: "🎁 FREE PACK X2", probabilidad: 20 },
+            { nombre: "💰 DISCOUNT 5%", probabilidad: 25 },
+            { nombre: "🏆 FREE GRADED CARD", probabilidad: 15 },
+            { nombre: "❌ No ganaste", probabilidad: 10 }
         ];
 
         const colores = ["#FFD700", "#FF4500", "#32CD32", "#1E90FF", "#D3D3D3"];
@@ -83,14 +107,28 @@
             if (velocidad > 0.1) {
                 requestAnimationFrame(animarGiro);
             } else {
-                let premioIndex = Math.floor((anguloActual % (2 * Math.PI)) / anguloPorPremio);
-                resultDiv.innerHTML = `¡Felicidades! Has ganado: ${premios[premioIndex]}`;
+                let premioIndex = obtenerPremioAleatorio(premios);
+                resultDiv.innerHTML = `¡Felicidades! Has ganado: ${premios[premioIndex].nombre}`;
                 document.getElementById("spinBtn").disabled = true;
                 girando = false;
             }
         }
 
         animarGiro();
+    }
+
+    function obtenerPremioAleatorio(premios) {
+        let totalProbabilidad = premios.reduce((acc, premio) => acc + premio.probabilidad, 0);
+        let random = Math.random() * totalProbabilidad;
+        let acumulado = 0;
+
+        for (let i = 0; i < premios.length; i++) {
+            acumulado += premios[i].probabilidad;
+            if (random <= acumulado) {
+                return i;
+            }
+        }
+        return premios.length - 1; // En caso de error, devuelve el último premio
     }
 
     function dibujarRuleta() {
@@ -129,7 +167,7 @@
         }
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("validateBtn").addEventListener("click", validarCodi);
         document.getElementById("spinBtn").addEventListener("click", girarRuleta);
         dibujarRuleta();
