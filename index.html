@@ -216,25 +216,5 @@
         window.location.href = `suerte.html?codigo=${codigoIngresado}`;
     }
 </script>
-  '<button>Comprar ahora</button>',
-  '<button onclick="simularCompra(this)">Comprar ahora</button>'
-).replace(
-  '<button>Agregar al carrito</button>',
-  '<button onclick="simularCompra(this)">Agregar al carrito</button>'
-).replace(
-  '<button>Comprar</button>',
-  '<button onclick="simularCompra(this)">Comprar</button>'
-).replace(
-  "</body>",
-  """
-<script>
-function simularCompra(boton) {
-  const titulo = boton.parentElement.querySelector('h3').innerText;
-  alert(`✅ Has añadido "${titulo}" al carrito. Este es un simulador de compra.`);
-}
-</script>
-</body>
-"""
-)
 </body>
 </html>
