@@ -10,8 +10,6 @@
     .hidden { display: none; }
     #result { margin-top: 1.5rem; font-size: 1.5rem; font-weight: bold; }
   </style>
-
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 </head>
@@ -31,7 +29,6 @@
   </div>
 
   <script>
-    // Config Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
       authDomain: "codigos-5820e.firebaseapp.com",
@@ -44,15 +41,15 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let yaGirado = false;
     let docRef = null;
+    let codigoActual = null;
+    let yaGirado = false;
 
     const premios = [
-      { texto: "🎁 FREE PACK", prob: 2 },
-      { texto: "🎁 FREE PACK X2", prob: 0.5 },
-      { texto: "💰 5% DESCUENTO", prob: 6 },
-      { texto: "🏆 CARTA GRADED", prob: 0.0000015 },
-      { texto: "❌ Nada", prob: 91.44995 }
+      { texto: "🎁 FREE PACK", prob: 0.003 },
+      { texto: "💰 5% DESCUENTO", prob: 0.001 },
+      { texto: "🏆 GRADED CARD", prob: 0.001 },
+      { texto: "❌ Nada", prob: 99.995 }
     ];
 
     const canvas = document.getElementById("wheelCanvas");
@@ -63,19 +60,29 @@
       const codigo = document.getElementById("codeInput").value.trim();
       if (!codigo) return alert("⚠️ Ingresa un código válido.");
 
+      codigoActual = codigo;
       docRef = db.collection("codigos_validos").doc(codigo);
+
       docRef.get().then((docSnap) => {
-        if (docSnap.exists && docSnap.data().valido && !docSnap.data().usado) {
-          docRef.update({ usado: true });
-          document.getElementById("codeSection").classList.add("hidden");
-          document.getElementById("ruletaSection").classList.remove("hidden");
-          dibujarRuleta();
-        } else {
-          alert("❌ Código inválido o ya utilizado.");
+        if (!docSnap.exists) {
+          alert("❌ Código inválido.");
+          return;
         }
-      }).catch((err) => {
-        console.error(err);
-        alert("⚠️ Error al validar código.");
+
+        const datos = docSnap.data();
+        if (!datos.valido || datos.usado) {
+          alert("❌ Código ya utilizado.");
+          return;
+        }
+
+        if (datos.premio) {
+          alert("⚠️ Este código ya ha girado y obtuvo: " + datos.premio);
+          return;
+        }
+
+        document.getElementById("codeSection").classList.add("hidden");
+        document.getElementById("ruletaSection").classList.remove("hidden");
+        dibujarRuleta();
       });
     }
 
@@ -122,19 +129,20 @@
       yaGirado = true;
       spinBtn.disabled = true;
 
-      const premioElegido = elegirPremio();
-      const index = premios.findIndex(p => p.texto === premioElegido);
+      const resultado = elegirPremio();
+      const index = premios.findIndex(p => p.texto === resultado);
       const gradosPorSector = 360 / premios.length;
-
-      // Seleccionamos hacia qué ángulo debe girar (sector del premio)
-      const anguloPremio = 360 - (index * gradosPorSector) + 720; // + 2 vueltas
+      const anguloPremio = 360 - (index * gradosPorSector) + 720;
 
       canvas.style.transform = `rotate(${anguloPremio}deg)`;
 
       setTimeout(() => {
-        document.getElementById("result").textContent = `🎉 Resultado: ${premioElegido}`;
-        // (opcional) docRef.update({ premio: premioElegido });
-      }, 4000); // Tiempo de animación
+        document.getElementById("result").textContent = `🎉 Resultado: ${resultado}`;
+        docRef.update({
+          usado: true,
+          premio: resultado
+        });
+      }, 4000);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -144,3 +152,4 @@
   </script>
 </body>
 </html>
+
