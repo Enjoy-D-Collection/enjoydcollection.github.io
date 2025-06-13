@@ -5,6 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruleta Promocional</title>
 
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2rem; }
+    canvas { margin-top: 2rem; }
+    .hidden { display: none; }
+    #result { margin-top: 1.5rem; font-size: 1.5rem; font-weight: bold; }
+    #codeSection { margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Promoción Especial - ¡Prueba tu suerte!</h1>
+
+  <div id="codeSection">
+    <p>Introduce tu código exclusivo para acceder a la ruleta:</p>
+    <input type="text" id="codeInput" placeholder="Código de comprador">
+    <button id="validateBtn">Validar</button>
+  </div>
+
+  <div id="ruletaSection" class="hidden">
+    <canvas id="wheelCanvas" width="300" height="300"></canvas>
+    <br>
+    <button id="spinBtn" disabled>Girar ruleta</button>
+    <div id="result"></div>
+  </div>
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("validateBtn").addEventListener("click", validarCodi);
@@ -114,29 +138,5 @@
         }
     }
   </script>
-
-  <style>
-    body { font-family: sans-serif; text-align: center; padding: 2rem; }
-    canvas { margin-top: 2rem; }
-    .hidden { display: none; }
-    #result { margin-top: 1.5rem; font-size: 1.5rem; font-weight: bold; }
-    #codeSection { margin-bottom: 1.5rem; }
-  </style>
-</head>
-<body>
-  <h1>Promoción Especial - ¡Prueba tu suerte!</h1>
-
-  <div id="codeSection">
-    <p>Introduce tu código exclusivo para acceder a la ruleta:</p>
-    <input type="text" id="codeInput" placeholder="Código de comprador">
-    <button id="validateBtn">Validar</button>
-  </div>
-
-  <div id="ruletaSection" class="hidden">
-    <canvas id="wheelCanvas" width="300" height="300"></canvas>
-    <br>
-    <button id="spinBtn" disabled>Girar ruleta</button>
-    <div id="result"></div>
-  </div>
 </body>
 </html>
