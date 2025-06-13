@@ -18,7 +18,8 @@
 
   <div id="codeSection">
     <p>Introduce tu código exclusivo para acceder a la ruleta:</p>
-    <input type="text" id="codeInput" placeholder="Código de comprador">
+    <label for="codeInput">Código de comprador:</label>
+    <input type="text" id="codeInput" name="codeInput" placeholder="Código de comprador">
     <button id="validateBtn">Validar</button>
   </div>
 
@@ -29,9 +30,9 @@
     <div id="result"></div>
   </div>
 
-  <!-- Importar Firebase desde la CDN -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.6/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.6/firebase-firestore.js"></script>
+  <!-- Importar Firebase desde la CDN con compatibilidad -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.6/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.6/firebase-firestore-compat.js"></script>
 
   <script>
     // Configuración de Firebase
@@ -101,8 +102,8 @@
         const premios = [
             "🎁 FREE PACK",
             "🎁 FREE PACK X2",
-            "💰 DISCOUNT 5%",
-            "🏆 FREE GRADED CARD",
+            "💰 DESCUENTO 5%",
+            "🏆 CARTA GRADUADA GRATIS",
             "❌ No ganaste"
         ];
 
