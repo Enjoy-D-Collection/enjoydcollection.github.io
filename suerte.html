@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruleta Promocional</title>
+
   <style>
     body { font-family: sans-serif; text-align: center; padding: 2rem; }
     canvas { margin-top: 2rem; }
@@ -11,26 +12,43 @@
     #result { margin-top: 1.5rem; font-size: 1.5rem; font-weight: bold; }
     #codeSection { margin-bottom: 1.5rem; }
   </style>
+</head>
+<body>
+  <h1>Promoción Especial - ¡Prueba tu suerte!</h1>
 
-  <!-- Firebase CDN (versión correcta) -->
+  <div id="codeSection">
+    <p>Introduce tu código exclusivo para acceder a la ruleta:</p>
+    <input type="text" id="codeInput" placeholder="Código de comprador">
+    <button id="validateBtn">Validar</button>
+  </div>
 
-  <script type="module">
-  import { initializeApp } from "firebase/app";
-  import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+  <div id="ruletaSection" class="hidden">
+    <canvas id="wheelCanvas" width="300" height="300"></canvas>
+    <br>
+    <button id="spinBtn" disabled>Girar ruleta</button>
+    <div id="result"></div>
+  </div>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
-    authDomain: "codigos-5820e.firebaseapp.com",
-    projectId: "codigos-5820e",
-    storageBucket: "codigos-5820e.firebasestorage.app",
-    messagingSenderId: "231416234142",
-    appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f",
-    measurementId: "G-YJ7E1HKKD3"
-  };
+  <!-- Importar Firebase desde la CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.6/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.6/firebase-firestore.js"></script>
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-</script>
+  <script>
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
+      authDomain: "codigos-5820e.firebaseapp.com",
+      projectId: "codigos-5820e",
+      storageBucket: "codigos-5820e.firebasestorage.app",
+      messagingSenderId: "231416234142",
+      appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f",
+      measurementId: "G-YJ7E1HKKD3"
+    };
+
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     async function validarCodigo() {
         const codigo = document.getElementById("codeInput").value.trim();
         const codeSection = document.getElementById("codeSection");
