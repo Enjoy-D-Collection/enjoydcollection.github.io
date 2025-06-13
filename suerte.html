@@ -6,7 +6,7 @@
   <title>Ruleta con Firestore</title>
   <style>
     body { font-family: sans-serif; text-align: center; padding: 2rem; }
-    canvas { margin-top: 2rem; }
+    canvas { margin-top: 2rem; transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1); }
     .hidden { display: none; }
     #result { margin-top: 1.5rem; font-size: 1.5rem; font-weight: bold; }
   </style>
@@ -26,7 +26,7 @@
   <div id="ruletaSection" class="hidden">
     <canvas id="wheelCanvas" width="300" height="300"></canvas>
     <br>
-    <button id="spinBtn" onclick="girar()">🎡 Girar</button>
+    <button id="spinBtn">🎡 Girar</button>
     <div id="result"></div>
   </div>
 
@@ -43,16 +43,21 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    let docRef = null;
+
     let yaGirado = false;
+    let docRef = null;
 
     const premios = [
       { texto: "🎁 FREE PACK", prob: 2 },
-      { texto: "🎁 FREE PACK X2", prob: 0.75 },
+      { texto: "🎁 FREE PACK X2", prob: 0.5 },
       { texto: "💰 5% DESCUENTO", prob: 6 },
-      { texto: "🏆 CARTA GRADED", prob: 0.00015 },
-      { texto: "❌ Nada", prob: 91.24985 } // el resto
+      { texto: "🏆 CARTA GRADED", prob: 0.0000015 },
+      { texto: "❌ Nada", prob: 91.44995 }
     ];
+
+    const canvas = document.getElementById("wheelCanvas");
+    const ctx = canvas.getContext("2d");
+    const spinBtn = document.getElementById("spinBtn");
 
     function validarCodigo() {
       const codigo = document.getElementById("codeInput").value.trim();
@@ -84,15 +89,12 @@
       return "❌ Nada";
     }
 
-    function dibujarRuleta(resultado = null) {
-      const canvas = document.getElementById("wheelCanvas");
-      const ctx = canvas.getContext("2d");
+    function dibujarRuleta() {
       ctx.clearRect(0, 0, 300, 300);
-      const secciones = premios.map(p => p.texto);
-      const angulo = 2 * Math.PI / secciones.length;
+      const angulo = 2 * Math.PI / premios.length;
       const colores = ["#FFD700", "#FF4500", "#32CD32", "#1E90FF", "#D3D3D3"];
 
-      for (let i = 0; i < secciones.length; i++) {
+      for (let i = 0; i < premios.length; i++) {
         ctx.beginPath();
         ctx.fillStyle = colores[i % colores.length];
         ctx.moveTo(150, 150);
@@ -106,12 +108,8 @@
         ctx.textAlign = "right";
         ctx.fillStyle = "#000";
         ctx.font = "13px sans-serif";
-        ctx.fillText(secciones[i], 140, 5);
+        ctx.fillText(premios[i].texto, 140, 5);
         ctx.restore();
-      }
-
-      if (resultado) {
-        document.getElementById("result").textContent = `🎉 Resultado: ${resultado}`;
       }
     }
 
@@ -122,39 +120,27 @@
       }
 
       yaGirado = true;
-      document.getElementById("spinBtn").disabled = true;
+      spinBtn.disabled = true;
 
-      const resultado = elegirPremio();
-      const canvas = document.getElementById("wheelCanvas");
-      const ctx = canvas.getContext("2d");
+      const premioElegido = elegirPremio();
+      const index = premios.findIndex(p => p.texto === premioElegido);
+      const gradosPorSector = 360 / premios.length;
 
-      let start = 0;
-      const total = 360 * 5 + Math.floor(Math.random() * 360);
-      const duracion = 4000;
-      const inicio = performance.now();
+      // Seleccionamos hacia qué ángulo debe girar (sector del premio)
+      const anguloPremio = 360 - (index * gradosPorSector) + 720; // + 2 vueltas
 
-      function animarRuleta(now) {
-        const tiempo = now - inicio;
-        const progreso = Math.min(tiempo / duracion, 1);
-        const easing = 1 - Math.pow(1 - progreso, 3); // ease-out
-        const anguloActual = start + total * easing;
+      canvas.style.transform = `rotate(${anguloPremio}deg)`;
 
-        ctx.save();
-        ctx.translate(150, 150);
-        ctx.rotate((anguloActual * Math.PI) / 180);
-        ctx.translate(-150, -150);
-        dibujarRuleta();
-        ctx.restore();
-
-        if (progreso < 1) {
-          requestAnimationFrame(animarRuleta);
-        } else {
-          dibujarRuleta(resultado);
-        }
-      }
-
-      requestAnimationFrame(animarRuleta);
+      setTimeout(() => {
+        document.getElementById("result").textContent = `🎉 Resultado: ${premioElegido}`;
+        // (opcional) docRef.update({ premio: premioElegido });
+      }, 4000); // Tiempo de animación
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      dibujarRuleta();
+      spinBtn.addEventListener("click", girar);
+    });
   </script>
 </body>
 </html>
