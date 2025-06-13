@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruleta Promocional</title>
 
-  <!-- 🔹 Script de Firebase (Módulo) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-    // 🔹 Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
       authDomain: "codigos-5820e.firebaseapp.com",
@@ -21,11 +19,9 @@
       measurementId: "G-YJ7E1HKKD3"
     };
 
-    // 🔹 Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 🔹 Función para validar código en Firestore
     async function validarCodi() {
       const codigo = document.getElementById("codeInput").value.trim();
       const codeSection = document.getElementById("codeSection");
@@ -44,8 +40,11 @@
           const datos = docSnap.data();
           if (datos.valido === true && datos.usado === false) {
             await updateDoc(docRef, { usado: true });
+
             codeSection.classList.add("hidden");
             ruletaSection.classList.remove("hidden");
+
+            document.getElementById("spinBtn").disabled = false;
           } else {
             alert("❌ Código inválido o ya utilizado.");
           }
@@ -58,84 +57,38 @@
       }
     }
 
-    // 🔹 Hacer que validarCodi esté disponible globalmente
     window.validarCodi = validarCodi;
   </script>
 
-  <!-- 🔹 Script para manejar eventos (No módulo) -->
-<script>
+  <script>
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("validateBtn").addEventListener("click", validarCodi);
         document.getElementById("spinBtn").addEventListener("click", girarRuleta);
-        dibujarRuleta(); // 🔹 Dibujar la ruleta al cargar la página
+        dibujarRuleta();
     });
 
-    // 🔹 Función para validar el código y permitir solo un giro
-    async function validarCodi() {
-        const codigo = document.getElementById("codeInput").value.trim();
-        const codeSection = document.getElementById("codeSection");
-        const ruletaSection = document.getElementById("ruletaSection");
+    let anguloActual = 0;
+    let girando = false;
 
-        if (!codigo) {
-            alert("⚠️ Ingresa un código válido.");
-            return;
-        }
-
-        try {
-            console.log("Buscando código en Firestore:", codigo); // 🔹 Depuración
-
-            const docRef = doc(db, "codigos_validos", codigo);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-                console.log("Código encontrado:", docSnap.data()); // 🔹 Depuración
-
-                const datos = docSnap.data();
-                if (datos.valido === true && datos.usado === false) {
-                    codeSection.classList.add("hidden");
-                    ruletaSection.classList.remove("hidden");
-
-                    // 🔹 Marcar el código como usado después de girar la ruleta
-                    document.getElementById("spinBtn").addEventListener("click", async () => {
-                        girarRuleta();
-                        await updateDoc(docRef, { usado: true });
-                        alert("✅ Tu código ha sido utilizado. No puedes girar de nuevo.");
-                        document.getElementById("spinBtn").disabled = true; // 🔹 Desactivar botón
-                    });
-
-                } else {
-                    alert("❌ Código inválido o ya utilizado.");
-                }
-            } else {
-                console.log("❌ Código NO encontrado en Firestore."); // 🔹 Depuración
-                alert("❌ Código no encontrado.");
-            }
-        } catch (error) {
-            console.error("Error al validar el código:", error);
-            alert("⚠️ Hubo un problema al validar el código.");
-        }
-    }
-
-    // 🔹 Función para girar la ruleta con probabilidades ajustadas
     function girarRuleta() {
+        if (girando) return; // Evitar múltiples giros
+        girando = true;
+
+        const canvas = document.getElementById("wheelCanvas");
+        const ctx = canvas.getContext("2d");
         const resultDiv = document.getElementById("result");
 
-        // 🔹 Definir premios y sus probabilidades
         const premios = [
-            { nombre: "🎁 FREE PACK", probabilidad: 0.005 }, // 0.5%
-            { nombre: "🎁 FREE PACK X2", probabilidad: 0.0025 }, // 0.25%
-            { nombre: "💰 DISCOUNT 5%", probabilidad: 0.06 }, // 6%
-            { nombre: "🏆 FREE GRADED CARD", probabilidad: 0.0000015 }, // 0.00015%
-            { nombre: "❌ No ganaste esta vez", probabilidad: 0.9324985 } // Resto de probabilidades
+            { nombre: "🎁 FREE PACK", probabilidad: 0.005 },
+            { nombre: "🎁 FREE PACK X2", probabilidad: 0.0025 },
+            { nombre: "💰 DISCOUNT 5%", probabilidad: 0.06 },
+            { nombre: "🏆 FREE GRADED CARD", probabilidad: 0.0000015 },
+            { nombre: "❌ No ganaste esta vez", probabilidad: 0.9324985 }
         ];
 
-        // 🔹 Generar número aleatorio entre 0 y 1
-        const random = Math.random();
-        console.log("Número aleatorio generado:", random); // 🔹 Depuración
-
-        // 🔹 Determinar el premio según el rango acumulativo
         let acumulado = 0;
-        let premioGanado = "❌ No ganaste esta vez"; // Por defecto
+        let premioGanado = "❌ No ganaste esta vez";
+        const random = Math.random();
 
         for (let premio of premios) {
             acumulado += premio.probabilidad;
@@ -145,11 +98,34 @@
             }
         }
 
-        // 🔹 Mostrar el resultado
-        resultDiv.innerHTML = `¡Felicidades! Has ganado: ${premioGanado}`;
+        let velocidad = 20;
+        let freno = 0.98;
+        let vueltas = Math.floor(Math.random() * 5) + 5; // Número de vueltas aleatorio
+
+        function animarGiro() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(anguloActual);
+            ctx.translate(-canvas.width / 2, -canvas.height / 2);
+            dibujarRuleta();
+            ctx.restore();
+
+            anguloActual += velocidad * Math.PI / 180;
+            velocidad *= freno;
+
+            if (velocidad > 0.1) {
+                requestAnimationFrame(animarGiro);
+            } else {
+                resultDiv.innerHTML = `¡Felicidades! Has ganado: ${premioGanado}`;
+                document.getElementById("spinBtn").disabled = true;
+                girando = false;
+            }
+        }
+
+        animarGiro();
     }
 
-    // 🔹 Función para dibujar la ruleta visualmente
     function dibujarRuleta() {
         const canvas = document.getElementById("wheelCanvas");
         const ctx = canvas.getContext("2d");
@@ -174,13 +150,18 @@
             ctx.fill();
             ctx.closePath();
 
-            // 🔹 Dibujar texto
             ctx.fillStyle = "black";
             ctx.font = "14px Arial";
-            ctx.fillText(premios[i], canvas.width / 2 + Math.cos(i * anguloPorPremio + anguloPorPremio / 2) * 80, canvas.height / 2 + Math.sin(i * anguloPorPremio + anguloPorPremio / 2) * 80);
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            let x = canvas.width / 2 + Math.cos(i * anguloPorPremio + anguloPorPremio / 2) * 100;
+            let y = canvas.height / 2 + Math.sin(i * anguloPorPremio + anguloPorPremio / 2) * 100;
+
+            ctx.fillText(premios[i], x, y);
         }
     }
-</script>
+  </script>
 
   <style>
     body { font-family: sans-serif; text-align: center; padding: 2rem; }
@@ -202,7 +183,7 @@
   <div id="ruletaSection" class="hidden">
     <canvas id="wheelCanvas" width="300" height="300"></canvas>
     <br>
-    <button id="spinBtn">Girar ruleta</button>
+    <button id="spinBtn" disabled>Girar ruleta</button>
     <div id="result"></div>
   </div>
 </body>
