@@ -168,16 +168,6 @@
             ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2, i * anguloPorPremio, (i + 1) * anguloPorPremio);
             ctx.fill();
             ctx.closePath();
-
-            ctx.fillStyle = "black";
-            ctx.font = "16px Arial";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-
-            let x = canvas.width / 2 + Math.cos(i * anguloPorPremio + anguloPorPremio / 2) * 100;
-            let y = canvas.height / 2 + Math.sin(i * anguloPorPremio + anguloPorPremio / 2) * 100;
-
-            ctx.fillText(premios[i], x, y);
         }
     }
 
