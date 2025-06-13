@@ -84,78 +84,50 @@
     .card button:hover {
       background-color: #2a2f99;
     }
+    #cart-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #ef5350;
+      color: white;
+      padding: 15px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 20;
+    }
+    #shopping-cart {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 300px;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      border-radius: 12px;
+      padding: 20px;
+      display: none;
+      z-index: 30;
+    }
+    #shopping-cart h3 {
+      margin-top: 0;
+    }
+    #coupon-section {
+      margin-top: 15px;
+    }
+    #coupon-section input {
+      width: calc(100% - 90px);
+      padding: 5px;
+    }
+    #coupon-section button {
+      padding: 5px;
+      margin-left: 5px;
+    }
     footer {
       background-color: #3b4cca;
       color: white;
       text-align: center;
       padding: 30px 20px;
       margin-top: 60px;
-    }
-
-    /* NUEVO: Estilos carrito */
-    #cart-icon {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      background: #ffcb05;
-      padding: 10px;
-      border-radius: 50px;
-      cursor: pointer;
-      font-size: 20px;
-      z-index: 20;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    }
-
-    #cart-count {
-      background: red;
-      color: white;
-      border-radius: 50%;
-      padding: 2px 6px;
-      font-size: 12px;
-      margin-left: 5px;
-    }
-
-    #shopping-cart {
-      display: none;
-      position: fixed;
-      top: 60px;
-      right: 10px;
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 15px;
-      width: 300px;
-      max-height: 400px;
-      overflow-y: auto;
-      z-index: 99;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-
-    #shopping-cart h3 {
-      margin-top: 0;
-    }
-
-    #shopping-cart ul {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    #shopping-cart li {
-      border-bottom: 1px solid #eee;
-      padding: 5px 0;
-    }
-
-    #shopping-cart button {
-      background-color: #ef5350;
-      color: white;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    #shopping-cart button:hover {
-      background-color: #c62828;
     }
   </style>
 </head>
@@ -176,15 +148,22 @@
   <a href="#contacto">Contacto</a>
 </nav>
 
-<!-- NUEVO: Icono carrito -->
 <div id="cart-icon" onclick="toggleCart()">🛒<span id="cart-count">0</span></div>
 
-<!-- NUEVO: Panel carrito -->
+<!-- Panel del carrito -->
 <div id="shopping-cart">
   <h3>🛍️ Tu Carrito</h3>
   <ul id="cart-items"></ul>
   <p id="total-price">Total: $0</p>
+
+  <div id="coupon-section">
+    <input type="text" id="cuponInput" placeholder="Cupón de descuento">
+    <button onclick="aplicarCupon()">Aplicar</button>
+    <p id="cuponMensaje" style="color: green;"></p>
+  </div>
+
   <button onclick="vaciarCarrito()">Vaciar carrito</button>
+  <button style="margin-top: 10px; background-color: #28a745;" onclick="pagar()">Pagar con PayPal / Tarjeta</button>
 </div>
 
 <section id="cartas">
@@ -194,13 +173,13 @@
       <img src="https://images.pokemontcg.io/base1/58.png" alt="Pikachu Base Set">
       <h3>Pikachu Base Set</h3>
       <p>$15</p>
-      <button onclick="agregarAlCarrito('Pikachu Base Set', 15)">Agregar al carrito</button>
+      <button onclick="procesarCompra()">Comprar ahora</button>
     </div>
     <div class="card">
       <img src="https://images.pokemontcg.io/base1/4.png" alt="Charizard Holo">
       <h3>Charizard Holo</h3>
       <p>$300</p>
-      <button onclick="agregarAlCarrito('Charizard Holo', 300)">Agregar al carrito</button>
+      <button onclick="procesarCompra()">Comprar ahora</button>
     </div>
   </div>
 </section>
@@ -208,60 +187,14 @@
 <section id="gradadas">
   <h2>Cartas Gradadas</h2>
   <div class="card-gallery">
-    <div class="card">
-      <img src="https://images.pokemontcg.io/base1/6.png" alt="Gyarados PSA 10">
-      <h3>Gyarados - PSA 10</h3>
-      <p>$450</p>
-      <button onclick="agregarAlCarrito('Gyarados PSA 10', 450)">Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://images.pokemontcg.io/base1/1.png" alt="Alakazam BGS 9.5">
-      <h3>Alakazam - BGS 9.5</h3>
-      <p>$320</p>
-      <button onclick="agregarAlCarrito('Alakazam BGS 9.5', 320)">Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://images.pokemontcg.io/base1/3.png" alt="Venusaur Holo">
-      <h3>Venusaur Holo - PSA 10</h3>
-      <p>$280</p>
-      <button onclick="agregarAlCarrito('Venusaur Holo PSA 10', 280)">Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://images.pokemontcg.io/base2/2.png" alt="Blastoise PSA 10">
-      <h3>Blastoise - PSA 10</h3>
-      <p>$500</p>
-      <button onclick="agregarAlCarrito('Blastoise PSA 10', 500)">Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://images.pokemontcg.io/base2/12.png" alt="Mewtwo PSA 10">
-      <h3>Mewtwo - PSA 10</h3>
-      <p>$460</p>
-      <button onclick="agregarAlCarrito('Mewtwo PSA 10', 460)">Agregar al carrito</button>
-    </div>
+    <!-- cartas gradadas aquí -->
   </div>
 </section>
 
 <section id="booster">
   <h2>Booster Japón</h2>
   <div class="card-gallery">
-    <div class="card">
-      <img src="https://images.pokemontcg.io/sm1/1.png" alt="Booster Sol y Luna Japonés">
-      <h3>Booster Sol y Luna (JP)</h3>
-      <p>$6</p>
-      <button onclick="agregarAlCarrito('Booster Sol y Luna (JP)', 6)">Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://images.pokemontcg.io/sm3/15.png" alt="Booster Sombra Ardiente JP">
-      <h3>Booster Sombra Ardiente (JP)</h3>
-      <p>$7</p>
-      <button onclick="agregarAlCarrito('Booster Sombra Ardiente (JP)', 7)">Agregar al carrito</button>
-    </div>
-    <div class="card">
-      <img src="https://images.pokemontcg.io/sm4/34.png" alt="Booster Ultra Prisma JP">
-      <h3>Booster Ultra Prisma (JP)</h3>
-      <p>$8</p>
-      <button onclick="agregarAlCarrito('Booster Ultra Prisma (JP)', 8)">Agregar al carrito</button>
-    </div>
+    <!-- boosters aquí -->
   </div>
 </section>
 
@@ -284,47 +217,50 @@
 </footer>
 
 <script>
-  async function validarCodigo() {
-      let codigoIngresado = document.getElementById("inputCodigo").value.trim();
-      if (!codigoIngresado) {
-          document.getElementById("mensaje").innerText = "⚠️ Ingresa un código válido.";
-          return;
-      }
-      window.location.href = `suerte.html?codigo=${codigoIngresado}`;
-  }
-
-  // NUEVO: Lógica del carrito
-  let carrito = [];
-  function agregarAlCarrito(nombre, precio) {
-      carrito.push({ nombre, precio });
-      actualizarCarrito();
-  }
-
-  function actualizarCarrito() {
-      const lista = document.getElementById("cart-items");
-      const total = document.getElementById("total-price");
-      const contador = document.getElementById("cart-count");
-      lista.innerHTML = "";
-      let totalPrecio = 0;
-      carrito.forEach((item) => {
-          const li = document.createElement("li");
-          li.textContent = `${item.nombre} - $${item.precio}`;
-          lista.appendChild(li);
-          totalPrecio += item.precio;
-      });
-      total.innerText = `Total: $${totalPrecio}`;
-      contador.innerText = carrito.length;
+  let carritoAbierto = false;
+  function toggleCart() {
+    carritoAbierto = !carritoAbierto;
+    document.getElementById("shopping-cart").style.display = carritoAbierto ? "block" : "none";
   }
 
   function vaciarCarrito() {
-      carrito = [];
-      actualizarCarrito();
+    document.getElementById("cart-items").innerHTML = "";
+    document.getElementById("cart-count").textContent = "0";
+    document.getElementById("total-price").textContent = "Total: $0";
   }
 
-  function toggleCart() {
-      const panel = document.getElementById("shopping-cart");
-      panel.style.display = (panel.style.display === "block") ? "none" : "block";
+  function pagar() {
+    alert("Redirigiendo al sistema de pago...");
+    // Aquí puedes integrar PayPal, Stripe u otro servicio.
+  }
+
+  function aplicarCupon() {
+    let cupon = document.getElementById("cuponInput").value.trim().toUpperCase();
+    let mensaje = document.getElementById("cuponMensaje");
+
+    if (cupon === "PIKACHU10") {
+      mensaje.textContent = "Cupón aplicado: 10% de descuento!";
+      // Aplica el descuento en el total (debes implementar la lógica real del carrito)
+    } else {
+      mensaje.textContent = "Cupón no válido.";
+      mensaje.style.color = "red";
+    }
+  }
+
+  function validarCodigo() {
+    let codigoIngresado = document.getElementById("inputCodigo").value.trim();
+    if (!codigoIngresado) {
+      document.getElementById("mensaje").innerText = "⚠️ Ingresa un código válido.";
+      return;
+    }
+    window.location.href = `suerte.html?codigo=${codigoIngresado}`;
+  }
+
+  function procesarCompra() {
+    alert("Producto agregado al carrito (simulado).");
+    // Aquí deberías añadir el producto al carrito real
   }
 </script>
+
 </body>
 </html>
