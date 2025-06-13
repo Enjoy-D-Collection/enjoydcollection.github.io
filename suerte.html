@@ -49,18 +49,32 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    async function validarCodi() {
+    async function validarCodigo() {
         const codigoIngresado = document.getElementById("codeInput").value.trim();
         
-        // Referencia al documento en Firestore
-        const docRef = doc(db, "codigos", codigoIngresado);
-        const docSnap = await getDoc(docRef);
+        if (!codigoIngresado) {
+            alert("Por favor, introduce un código.");
+            return;
+        }
 
-        if (docSnap.exists()) {
-            document.getElementById("ruletaSection").classList.remove("hidden");
-            document.getElementById("spinBtn").disabled = false;
-        } else {
-            alert("Código inválido. Inténtalo de nuevo.");
+        console.log("Código ingresado:", codigoIngresado);
+
+        try {
+            // Referencia al documento en Firestore
+            const docRef = doc(db, "codigos", codigoIngresado);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                console.log("Documento encontrado:", docSnap.data());
+                document.getElementById("ruletaSection").classList.remove("hidden");
+                document.getElementById("spinBtn").disabled = false;
+            } else {
+                console.log("Código inválido.");
+                alert("Código inválido. Inténtalo de nuevo.");
+            }
+        } catch (error) {
+            console.error("Error al acceder a Firestore:", error);
+            alert("Hubo un error al validar el código. Revisa la consola para más detalles.");
         }
     }
 
@@ -168,7 +182,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("validateBtn").addEventListener("click", validarCodi);
+        document.getElementById("validateBtn").addEventListener("click", validarCodigo);
         document.getElementById("spinBtn").addEventListener("click", girarRuleta);
         dibujarRuleta();
     });
