@@ -13,44 +13,24 @@
   </style>
 
   <!-- Firebase CDN (versión correcta) -->
-<script type="module">
-  // ✅ Importar Firebase correctamente desde el CDN
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
-  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/
-    
-  <h1>Promoción Especial - ¡Prueba tu suerte!</h1>
 
-  <div id="codeSection">
-    <label for="codeInput">Introduce tu código exclusivo para acceder a la ruleta:</label>
-    <input type="text" id="codeInput" name="codeInput" placeholder="Código de comprador">
-    <button id="validateBtn">Validar</button>
-  </div>
+  <script type="module">
+  import { initializeApp } from "firebase/app";
+  import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 
-  <div id="ruletaSection" class="hidden">
-    <canvas id="wheelCanvas" width="300" height="300"></canvas>
-    <br>
-    <button id="spinBtn" disabled>Girar ruleta</button>
-    <div id="result"></div>
-  </div>
+  const firebaseConfig = {
+    apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
+    authDomain: "codigos-5820e.firebaseapp.com",
+    projectId: "codigos-5820e",
+    storageBucket: "codigos-5820e.firebasestorage.app",
+    messagingSenderId: "231416234142",
+    appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f",
+    measurementId: "G-YJ7E1HKKD3"
+  };
 
-  <script>
-    // ✅ Configuración correcta de Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
-      authDomain: "codigos-5820e.firebaseapp.com",
-      projectId: "codigos-5820e",
-      storageBucket: "codigos-5820e.firebasestorage.app",
-      messagingSenderId: "231416234142",
-      appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f",
-      measurementId: "G-YJ7E1HKKD3"
-    };
-
-    // ✅ Inicializar Firebase correctamente
-    firebase.initializeApp(firebaseConfig);
-    const analytics = firebase.analytics();
-    const db = firebase.firestore();
-
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+</script>
     async function validarCodigo() {
         const codigo = document.getElementById("codeInput").value.trim();
         const codeSection = document.getElementById("codeSection");
