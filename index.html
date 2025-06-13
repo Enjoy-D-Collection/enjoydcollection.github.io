@@ -109,7 +109,17 @@
   <a href="suerte.html">Suerte del Día</a>
   <a href="#contacto">Contacto</a>
 </nav>
+<div id="cart-icon" onclick="toggleCart()">
+  🛒<span id="cart-count">0</span>
+</div>
 
+<!-- Panel del carrito -->
+<div id="shopping-cart">
+  <h3>🛍️ Tu Carrito</h3>
+  <ul id="cart-items"></ul>
+  <p id="total-price">Total: $0</p>
+  <button onclick="vaciarCarrito()">Vaciar carrito</button>
+</div>
 <section id="cartas">
   <h2>Cartas Disponibles</h2>
   <div class="card-gallery">
