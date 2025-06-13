@@ -31,8 +31,9 @@
 
   <script type="module">
     // Importar Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+   // Importar Firebase correctamente con npm
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 
     // Configuración de Firebase
     const firebaseConfig = {
@@ -50,99 +51,48 @@
     const db = getFirestore(app);
 
     async function validarCodigo() {
-        const codigoIngresado = document.getElementById("codeInput").value.trim();
-        
-        if (!codigoIngresado) {
-            alert("Por favor, introduce un código.");
+        const codigo = document.getElementById("codeInput").value.trim();
+        const codeSection = document.getElementById("codeSection");
+        const ruletaSection = document.getElementById("ruletaSection");
+
+        if (!codigo) {
+            alert("⚠️ Ingresa un código válido.");
             return;
         }
 
-        console.log("Código ingresado:", codigoIngresado);
-
         try {
-            // 🔥 Cambiar la colección a "codigos_validos"
-            const docRef = doc(db, "codigos_validos", codigoIngresado);
+            console.log("Buscando código en Firestore:", codigo);
+            const docRef = doc(db, "codigos_validos", codigo);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
-                console.log("✅ Código válido:", docSnap.data());
-                document.getElementById("ruletaSection").classList.remove("hidden");
-                document.getElementById("spinBtn").disabled = false;
+                console.log("✅ Código encontrado:", docSnap.data());
+                const datos = docSnap.data();
+
+                if (datos.valido === true && datos.usado === false) {
+                    codeSection.classList.add("hidden");
+                    ruletaSection.classList.remove("hidden");
+
+                    document.getElementById("spinBtn").disabled = false;
+
+                    document.getElementById("spinBtn").addEventListener("click", async () => {
+                        girarRuleta();
+                        await updateDoc(docRef, { usado: true });
+                        alert("✅ Tu código ha sido utilizado. No puedes girar de nuevo.");
+                        document.getElementById("spinBtn").disabled = true;
+                    });
+
+                } else {
+                    alert("❌ Código inválido o ya utilizado.");
+                }
             } else {
-                console.log("❌ Código inválido.");
-                alert("Código inválido. Inténtalo de nuevo.");
+                console.log("❌ Código NO encontrado en Firestore.");
+                alert("❌ Código no encontrado.");
             }
         } catch (error) {
-            console.error("🚨 Error al acceder a Firestore:", error);
-            alert("Hubo un error al validar el código. Revisa la consola para más detalles.");
+            console.error("Error al validar el código:", error);
+            alert("⚠️ Hubo un problema al validar el código.");
         }
-    }
-
-    let anguloActual = 0;
-    let girando = false;
-
-    function girarRuleta() {
-        if (girando) return; // Evitar múltiples giros
-        girando = true;
-
-        const canvas = document.getElementById("wheelCanvas");
-        const ctx = canvas.getContext("2d");
-        const resultDiv = document.getElementById("result");
-
-        // Premios con porcentajes de probabilidad
-        const premios = [
-            { nombre: "🎁 FREE PACK", probabilidad: 30 },
-            { nombre: "🎁 FREE PACK X2", probabilidad: 20 },
-            { nombre: "💰 DISCOUNT 5%", probabilidad: 25 },
-            { nombre: "🏆 FREE GRADED CARD", probabilidad: 15 },
-            { nombre: "❌ No ganaste", probabilidad: 10 }
-        ];
-
-        const colores = ["#FFD700", "#FF4500", "#32CD32", "#1E90FF", "#D3D3D3"];
-        const totalPremios = premios.length;
-        const anguloPorPremio = (2 * Math.PI) / totalPremios;
-
-        let velocidad = 20;
-        let freno = 0.98;
-        let vueltas = Math.floor(Math.random() * 5) + 5; // Número de vueltas aleatorio
-
-        function animarGiro() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.save();
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            ctx.rotate(anguloActual);
-            ctx.translate(-canvas.width / 2, -canvas.height / 2);
-            dibujarRuleta();
-            ctx.restore();
-
-            anguloActual += velocidad * Math.PI / 180;
-            velocidad *= freno;
-
-            if (velocidad > 0.1) {
-                requestAnimationFrame(animarGiro);
-            } else {
-                let premioIndex = obtenerPremioAleatorio(premios);
-                resultDiv.innerHTML = `¡Felicidades! Has ganado: ${premios[premioIndex].nombre}`;
-                document.getElementById("spinBtn").disabled = true;
-                girando = false;
-            }
-        }
-
-        animarGiro();
-    }
-
-    function obtenerPremioAleatorio(premios) {
-        let totalProbabilidad = premios.reduce((acc, premio) => acc + premio.probabilidad, 0);
-        let random = Math.random() * totalProbabilidad;
-        let acumulado = 0;
-
-        for (let i = 0; i < premios.length; i++) {
-            acumulado += premios[i].probabilidad;
-            if (random <= acumulado) {
-                return i;
-            }
-        }
-        return premios.length - 1; // En caso de error, devuelve el último premio
     }
 
     function dibujarRuleta() {
@@ -168,12 +118,15 @@
             ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2, i * anguloPorPremio, (i + 1) * anguloPorPremio);
             ctx.fill();
             ctx.closePath();
+
+            ctx.fillStyle = "black";
+            ctx.font = "14px Arial";
+            ctx.fillText(premios[i], canvas.width / 2 + Math.cos(i * anguloPorPremio + anguloPorPremio / 2) * 80, canvas.height / 2 + Math.sin(i * anguloPorPremio + anguloPorPremio / 2) * 80);
         }
     }
 
     document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("validateBtn").addEventListener("click", validarCodigo);
-        document.getElementById("spinBtn").addEventListener("click", girarRuleta);
         dibujarRuleta();
     });
   </script>
