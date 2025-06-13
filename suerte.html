@@ -26,7 +26,7 @@
     const db = getFirestore(app);
 
     // 🔹 Función para validar código en Firestore
-    async function validarCodigo() {
+    async function validarCodi() {
       const codigo = document.getElementById("codeInput").value.trim();
       const codeSection = document.getElementById("codeSection");
       const ruletaSection = document.getElementById("ruletaSection");
@@ -67,11 +67,14 @@
       resultDiv.innerHTML = `¡Felicidades! Has ganado: ${premio}`;
     }
 
-    // 🔹 Asignar eventos a los botones
-    window.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("validateBtn").addEventListener("click", validarCodigo);
+    // 🔹 Asignar eventos a los botones cuando el DOM esté listo
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("validateBtn").addEventListener("click", validarCodi);
       document.getElementById("spinBtn").addEventListener("click", girarRuleta);
     });
+
+    // 🔹 Hacer que validarCodi esté disponible globalmente
+    window.validarCodi = validarCodi;
   </script>
 
   <style>
