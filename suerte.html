@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ruleta Promocional</title>
 
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js"></script>
+
   <style>
     body { font-family: sans-serif; text-align: center; padding: 2rem; }
     canvas { margin-top: 2rem; }
@@ -29,104 +33,91 @@
     <div id="result"></div>
   </div>
 
-  <script type="module">
-    // Importar Firebase
-    import { initializeApp } from "firebase/app";
-    import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
-
+  <script>
     // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyA2qF7V3izwM6W20U50_bgpXp89ATBR1ug",
       authDomain: "codigos-5820e.firebaseapp.com",
       projectId: "codigos-5820e",
-      storageBucket: "codigos-5820e.appspot.com", // Corregido
+      storageBucket: "codigos-5820e.appspot.com",
       messagingSenderId: "231416234142",
       appId: "1:231416234142:web:fa59eaddaee1c0bd58fb8f",
       measurementId: "G-YJ7E1HKKD3"
     };
 
     // Inicializar Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
     async function validarCodigo() {
-        const codigo = document.getElementById("codeInput").value.trim();
-        const codeSection = document.getElementById("codeSection");
-        const ruletaSection = document.getElementById("ruletaSection");
+      const codigo = document.getElementById("codeInput").value.trim();
+      if (!codigo) {
+        alert("⚠️ Ingresa un código válido.");
+        return;
+      }
 
-        if (!codigo) {
-            alert("⚠️ Ingresa un código válido.");
-            return;
+      try {
+        const docRef = db.collection("codigos_validos").doc(codigo);
+        const docSnap = await docRef.get();
+
+        if (docSnap.exists) {
+          const datos = docSnap.data();
+          if (datos.valido && !datos.usado) {
+            document.getElementById("codeSection").classList.add("hidden");
+            document.getElementById("ruletaSection").classList.remove("hidden");
+            document.getElementById("spinBtn").disabled = false;
+
+            document.getElementById("spinBtn").addEventListener("click", async () => {
+              girarRuleta();
+              await docRef.update({ usado: true });
+              alert("✅ Tu código ha sido utilizado. No puedes girar de nuevo.");
+              document.getElementById("spinBtn").disabled = true;
+            });
+          } else {
+            alert("❌ Código inválido o ya utilizado.");
+          }
+        } else {
+          alert("❌ Código no encontrado.");
         }
-
-        try {
-            console.log("Buscando código en Firestore:", codigo);
-            const docRef = doc(db, "codigos_validos", codigo); // Asegurando la colección correcta
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-                console.log("✅ Código encontrado:", docSnap.data());
-                const datos = docSnap.data();
-
-                if (datos.valido === true && datos.usado === false) {
-                    codeSection.classList.add("hidden");
-                    ruletaSection.classList.remove("hidden");
-
-                    document.getElementById("spinBtn").disabled = false;
-
-                    document.getElementById("spinBtn").addEventListener("click", async () => {
-                        girarRuleta();
-                        await updateDoc(docRef, { usado: true });
-                        alert("✅ Tu código ha sido utilizado. No puedes girar de nuevo.");
-                        document.getElementById("spinBtn").disabled = true;
-                    });
-
-                } else {
-                    alert("❌ Código inválido o ya utilizado.");
-                }
-            } else {
-                console.log("❌ Código NO encontrado en Firestore.");
-                alert("❌ Código no encontrado.");
-            }
-        } catch (error) {
-            console.error("Error al validar el código:", error);
-            alert("⚠️ Hubo un problema al validar el código.");
-        }
+      } catch (error) {
+        console.error("Error al validar el código:", error);
+        alert("⚠️ Hubo un problema al validar el código.");
+      }
     }
 
     function dibujarRuleta() {
-        const canvas = document.getElementById("wheelCanvas");
-        const ctx = canvas.getContext("2d");
+      const canvas = document.getElementById("wheelCanvas");
+      const ctx = canvas.getContext("2d");
 
-        const premios = [
-            "🎁 FREE PACK",
-            "🎁 FREE PACK X2",
-            "💰 DISCOUNT 5%",
-            "🏆 FREE GRADED CARD",
-            "❌ No ganaste"
-        ];
+      const premios = [
+        "🎁 FREE PACK",
+        "🎁 FREE PACK X2",
+        "💰 DISCOUNT 5%",
+        "🏆 FREE GRADED CARD",
+        "❌ No ganaste"
+      ];
 
-        const colores = ["#FFD700", "#FF4500", "#32CD32", "#1E90FF", "#D3D3D3"];
-        const totalPremios = premios.length;
-        const anguloPorPremio = (2 * Math.PI) / totalPremios;
+      const colores = ["#FFD700", "#FF4500", "#32CD32", "#1E90FF", "#D3D3D3"];
+      const totalPremios = premios.length;
+      const anguloPorPremio = (2 * Math.PI) / totalPremios;
 
-        for (let i = 0; i < totalPremios; i++) {
-            ctx.beginPath();
-            ctx.fillStyle = colores[i];
-            ctx.moveTo(canvas.width / 2, canvas.height / 2);
-            ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2, i * anguloPorPremio, (i + 1) * anguloPorPremio);
-            ctx.fill();
-            ctx.closePath();
+      for (let i = 0; i < totalPremios; i++) {
+        ctx.beginPath();
+        ctx.fillStyle = colores[i];
+        ctx.moveTo(canvas.width / 2, canvas.height / 2);
+        ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2, i * anguloPorPremio, (i + 1) * anguloPorPremio);
+        ctx.fill();
+        ctx.closePath();
 
-            ctx.fillStyle = "black";
-            ctx.font = "14px Arial";
-            ctx.fillText(premios[i], canvas.width / 2 + Math.cos(i * anguloPorPremio + anguloPorPremio / 2) * 80, canvas.height / 2 + Math.sin(i * anguloPorPremio + anguloPorPremio / 2) * 80);
-        }
+        ctx.fillStyle = "black";
+        ctx.font = "14px Arial";
+        ctx.fillText(premios[i], canvas.width / 2 + Math.cos(i * anguloPorPremio + anguloPorPremio / 2) * 80, canvas.height / 2 + Math.sin(i * anguloPorPremio + anguloPorPremio / 2) * 80);
+      }
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("validateBtn").addEventListener("click", validarCodigo);
-        dibujarRuleta();
+      document.getElementById("validateBtn").addEventListener("click", validarCodigo);
+      dibujarRuleta();
     });
   </script>
 </body>
