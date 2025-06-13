@@ -63,11 +63,58 @@
   </script>
 
   <!-- 🔹 Script para manejar eventos (No módulo) -->
- <script>
+<script>
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("validateBtn").addEventListener("click", validarCodi);
         document.getElementById("spinBtn").addEventListener("click", girarRuleta);
+        dibujarRuleta(); // 🔹 Dibujar la ruleta al cargar la página
     });
+
+    // 🔹 Función para validar el código y permitir solo un giro
+    async function validarCodi() {
+        const codigo = document.getElementById("codeInput").value.trim();
+        const codeSection = document.getElementById("codeSection");
+        const ruletaSection = document.getElementById("ruletaSection");
+
+        if (!codigo) {
+            alert("⚠️ Ingresa un código válido.");
+            return;
+        }
+
+        try {
+            console.log("Buscando código en Firestore:", codigo); // 🔹 Depuración
+
+            const docRef = doc(db, "codigos_validos", codigo);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                console.log("Código encontrado:", docSnap.data()); // 🔹 Depuración
+
+                const datos = docSnap.data();
+                if (datos.valido === true && datos.usado === false) {
+                    codeSection.classList.add("hidden");
+                    ruletaSection.classList.remove("hidden");
+
+                    // 🔹 Marcar el código como usado después de girar la ruleta
+                    document.getElementById("spinBtn").addEventListener("click", async () => {
+                        girarRuleta();
+                        await updateDoc(docRef, { usado: true });
+                        alert("✅ Tu código ha sido utilizado. No puedes girar de nuevo.");
+                        document.getElementById("spinBtn").disabled = true; // 🔹 Desactivar botón
+                    });
+
+                } else {
+                    alert("❌ Código inválido o ya utilizado.");
+                }
+            } else {
+                console.log("❌ Código NO encontrado en Firestore."); // 🔹 Depuración
+                alert("❌ Código no encontrado.");
+            }
+        } catch (error) {
+            console.error("Error al validar el código:", error);
+            alert("⚠️ Hubo un problema al validar el código.");
+        }
+    }
 
     // 🔹 Función para girar la ruleta con probabilidades ajustadas
     function girarRuleta() {
@@ -100,6 +147,38 @@
 
         // 🔹 Mostrar el resultado
         resultDiv.innerHTML = `¡Felicidades! Has ganado: ${premioGanado}`;
+    }
+
+    // 🔹 Función para dibujar la ruleta visualmente
+    function dibujarRuleta() {
+        const canvas = document.getElementById("wheelCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const premios = [
+            "🎁 FREE PACK",
+            "🎁 FREE PACK X2",
+            "💰 DISCOUNT 5%",
+            "🏆 FREE GRADED CARD",
+            "❌ No ganaste"
+        ];
+
+        const colores = ["#FFD700", "#FF4500", "#32CD32", "#1E90FF", "#D3D3D3"];
+        const totalPremios = premios.length;
+        const anguloPorPremio = (2 * Math.PI) / totalPremios;
+
+        for (let i = 0; i < totalPremios; i++) {
+            ctx.beginPath();
+            ctx.fillStyle = colores[i];
+            ctx.moveTo(canvas.width / 2, canvas.height / 2);
+            ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2, i * anguloPorPremio, (i + 1) * anguloPorPremio);
+            ctx.fill();
+            ctx.closePath();
+
+            // 🔹 Dibujar texto
+            ctx.fillStyle = "black";
+            ctx.font = "14px Arial";
+            ctx.fillText(premios[i], canvas.width / 2 + Math.cos(i * anguloPorPremio + anguloPorPremio / 2) * 80, canvas.height / 2 + Math.sin(i * anguloPorPremio + anguloPorPremio / 2) * 80);
+        }
     }
 </script>
 
